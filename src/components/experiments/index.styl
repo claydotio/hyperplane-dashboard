@@ -1,0 +1,24 @@
+@require 'zorium-paper/base'
+
+json('zorium-paper/colors.json')
+
+.z-experiments
+  display: flex
+
+  > .list
+    zp-font-subhead()
+    width: 200px
+    padding: 32px 0
+
+    > .list-item
+      padding: 8px 16px
+
+      &:hover
+        cursor: pointer
+        background: rgba(0, 0, 0, 0.03)
+
+      &.is-selected
+        background: rgba(0, 0, 0, 0.06)
+
+  > .results
+    flex: 1

@@ -1,0 +1,36 @@
+@require 'zorium-paper/base'
+
+json('zorium-paper/colors.json')
+
+.z-experiment-results
+  border: 2px solid $black
+  margin: 32px 16px 0 0
+
+  > .name
+    padding: 16px
+    border-bottom: 2px solid $black
+
+  > .graph
+    padding: 16px
+    background: red
+    border-bottom: 2px solid $black
+
+  > .tabs
+    background: $pink500
+
+  > .data
+    padding: 16px
+
+    > table
+      width: 100%
+      text-align: left
+
+      > tr
+        border-bottom: 2px solid $black12
+        padding: 16px
+
+        > th
+          color: $black54
+
+        > td, > th
+          padding: 16px

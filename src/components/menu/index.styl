@@ -1,0 +1,48 @@
+@require 'zorium-paper/base'
+
+json('zorium-paper/colors.json')
+
+.z-menu
+  color: $indigo500Text
+
+  > .stub
+    background: $indigo500
+    height: 56px
+
+  > .float
+    z-index: 100000 // FIXME: global z-index
+    background: $indigo500
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 56px
+
+    > .tool-bar
+      height: 56px
+
+    > .tab-bar
+      height: 48px
+
+  &.has-tabs
+    > .stub
+      height: 48px
+
+    > .float
+      height: 48px
+
+
+  &.has-tools
+    > .stub
+      height: 56px
+
+    > .float
+      height: 56px
+
+
+  &.has-tabs.has-tools
+    > .stub
+      height: 56px + 48px
+
+    > .float
+      height: 56px + 48px
