@@ -24,7 +24,7 @@ module.exports = class ExperimentResults
 
     z '.z-experiment-results',
       z '.name',
-        experiment?.name
+        experiment?.key
       z '.graph'
       z '.tabs',
         z @$tabs,

@@ -7,13 +7,18 @@ z = require 'zorium'
 Promise = require 'bluebird'
 request = require 'clay-request'
 Rx = require 'rx-lite'
+cookieParser = require 'cookie-parser'
 
 config = require './src/config'
 gulpConfig = require './gulp_config'
 App = require './src/app'
+Model = require './src/models'
+CookieService = require './src/services/cookie'
 
 MIN_TIME_REQUIRED_FOR_HSTS_GOOGLE_PRELOAD_MS = 10886400000 # 18 weeks
 HEALTHCHECK_TIMEOUT = 200
+
+Rx.config.Promise = Promise
 
 app = express()
 router = express.Router()
@@ -48,6 +53,7 @@ app.use helmet.hsts
 app.use helmet.noSniff()
 app.use helmet.crossdomain()
 app.disable 'x-powered-by'
+app.use cookieParser()
 
 app.use '/healthcheck', (req, res, next) ->
   Promise.settle [
@@ -77,7 +83,21 @@ else app.use express.static(gulpConfig.paths.build, {maxAge: '4h'})
 
 app.use router
 app.use (req, res, next) ->
-  z.renderToString new App({requests: Rx.Observable.just({req, res})})
+  accessTokenStream = new Rx.BehaviorSubject req.cookies.accessToken
+  accessTokenStream.subscribeOnNext (accessToken) ->
+    res.cookie \
+      config.AUTH_COOKIE, accessToken, CookieService.getAuthCookieOpts()
+
+  model = new Model({accessTokenStream})
+
+  model.user.getMe()
+  .take(1).toPromise()
+  .catch ->
+    model.user.create()
+  .then ({accessToken}) ->
+    accessTokenStream.onNext accessToken
+  .then ->
+    z.renderToString new App({requests: Rx.Observable.just({req, res}), model})
   .then (html) ->
     res.send '<!DOCTYPE html>' + html
   .catch (err) ->

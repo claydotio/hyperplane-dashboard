@@ -11,13 +11,13 @@ if window?
   require './index.styl'
 
 module.exports = class HomePage
-  constructor: ->
+  constructor: ({model}) ->
     selectedIndex = new Rx.BehaviorSubject(0)
 
     @$head = new Head()
     @$menu = new Menu()
     @$tabs = new Tabs({selectedIndex})
-    @$experiments = new Experiments()
+    @$experiments = new Experiments({model})
     @$metrics = new Metrics()
 
     @state = z.state

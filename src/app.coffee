@@ -31,7 +31,7 @@ else
   null
 
 module.exports = class App
-  constructor: ({requests}) ->
+  constructor: ({requests, model}) ->
     router = new Routes()
 
     requests = requests.map ({req, res}) ->
@@ -42,9 +42,11 @@ module.exports = class App
 
     $homePage = new HomePage({
       requests: requests.filter ({$page}) -> $page instanceof HomePage
+      model
     })
     $fourOhFourPage = new FourOhFourPage({
       requests: requests.filter ({$page}) -> $page instanceof FourOhFourPage
+      model
     })
 
     router.addRoute '/', -> $homePage

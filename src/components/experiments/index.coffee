@@ -9,13 +9,14 @@ if window?
 
 
 module.exports = class Experiments
-  constructor: ->
-    experiments = [{name: 'Login Button'}, {name: 'Splash Screen'}]
+  constructor: ({model}) ->
+    experiments = model.experiment.getAll()
 
     @selectedIndex = new Rx.BehaviorSubject 0
     @$experimentResults = new ExperimentResults({
-      experiment: @selectedIndex.map (index) ->
-        experiments[index]
+      experiment: @selectedIndex.flatMapLatest (index) ->
+        experiments.map (experiments) ->
+          experiments[index]
     })
 
     @state = z.state
@@ -35,6 +36,6 @@ module.exports = class Experiments
             className: z.classKebab {isSelected: index is selectedIndex}
             onclick: =>
               @select index
-            experiment.name
+            experiment.key
       z '.results',
         @$experimentResults
