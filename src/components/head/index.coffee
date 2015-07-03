@@ -116,6 +116,8 @@ module.exports = class Head
         null
 
       # scripts
+      z 'script', src: "https://www.google.com/jsapi?autoload={'modules':" +
+        "[{'name':'visualization','version':'1.1','packages':['line']}]}"
       z 'script.bundle',
         async: true
         src: if isInliningSource then bundlePath \

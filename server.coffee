@@ -32,7 +32,9 @@ webpackDevHost = "#{gulpConfig.WEBPACK_DEV_HOSTNAME}:" +
 scriptSrc = [
   '\'self\''
   '\'unsafe-inline\''
+  '\'unsafe-eval\''
   'www.google-analytics.com'
+  'www.google.com'
   if config.ENV is config.ENVS.DEV then webpackDevHost
 ]
 stylesSrc = [

@@ -12,13 +12,13 @@ if window?
 
 module.exports = class HomePage
   constructor: ({model}) ->
-    selectedIndex = new Rx.BehaviorSubject(0)
+    selectedIndex = new Rx.BehaviorSubject(1) #new Rx.BehaviorSubject(0)
 
     @$head = new Head()
     @$menu = new Menu()
     @$tabs = new Tabs({selectedIndex})
     @$experiments = new Experiments({model})
-    @$metrics = new Metrics()
+    @$metrics = new Metrics({model})
 
     @state = z.state
       selectedIndex: selectedIndex
