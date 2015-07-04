@@ -30,54 +30,76 @@ module.exports = class Metrics
     .map (result) ->
       _.flatten result.series[0].values
 
-    metrics = Rx.Observable.just [{
-      name: 'egp / view'
-      numerator:
-        select: 'count(value)'
-        where: 'event=\'egp\''
-      denominator:
-        select: 'count(value)'
-        where: 'event=\'view\''
-    }
-    # , {
-    #   name: 'sends / sender'
-    #   numerator:
-    #     select: 'count(value)'
-    #     where: 'event=\'send\''
-    #   denominator:
-    #     select: 'count(distinct(userId))'
-    #     where: 'event=\'send\''
-    # }
-    {
-      name: 'DAU'
-      numerator:
-        select: 'count(distinct(userId))'
-        where: 'event=\'view\''
-    }
-    {
-      name: 'Revenue'
-      numerator:
-        select: 'count(value)'
-        where: 'event=\'revenue\''
-    }
-    {
-      name: 'D1 Retention'
-      isRunningAverage: true
-      numerator:
-        select: 'count(distinct(userId))'
-        where: (date) ->
-          day = dateToDay date
-          "event=\'view\' AND " +
-          "time >= #{day}d AND time < #{day + 1}d AND " +
-          "joinDay = '#{day - 1}'"
-      denominator:
-        select: 'count(distinct(userId))'
-        where: (date) ->
-          day = dateToDay date
-          "event=\'view\' AND " +
-          "time >= #{day - 1}d AND time < #{day}d AND " +
-          "joinDay = '#{day - 1}'"
-    }].reverse()
+    metrics = Rx.Observable.just [
+      {
+        name: 'egp / view'
+        numerator:
+          select: 'count(value)'
+          where: 'event=\'egp\''
+        denominator:
+          select: 'count(value)'
+          where: 'event=\'view\''
+      }
+      {
+        name: 'DAU'
+        numerator:
+          select: 'count(distinct(userId))'
+          where: 'event=\'view\''
+      }
+      {
+        name: 'Revenue'
+        numerator:
+          select: 'count(value)'
+          where: 'event=\'revenue\''
+      }
+      {
+        name: 'D1 Retention'
+        isRunningAverage: true
+        numerator:
+          select: 'count(distinct(userId))'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'view\' AND " +
+            "time >= #{day}d AND time < #{day + 1}d AND " +
+            "joinDay = '#{day - 1}'"
+        denominator:
+          select: 'count(distinct(userId))'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'view\' AND " +
+            "time >= #{day - 1}d AND time < #{day}d AND " +
+            "joinDay = '#{day - 1}'"
+      }
+      {
+        name: '3d LTV'
+        isRunningAverage: true
+        numerator:
+          select: 'sum(value)'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'revenue\' AND " +
+            "time >= #{day - 3}d AND time < #{day + 1}d AND " +
+            "joinDay = '#{day - 3}'"
+      }
+      {
+        name: '2d SPS'
+        isRunningAverage: true
+        numerator:
+          select: 'count(value)'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'send\' AND " +
+            "time >= #{day - 2}d AND time < #{day + 1}d AND " +
+            "joinDay = '#{day - 2}'"
+        denominator:
+          select: 'count(distinct(userId))'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'send\' AND " +
+            "time >= #{day - 2}d AND time < #{day - 1}d AND " +
+            "joinDay = '#{day - 2}'"
+      }
+    ].reverse()
 
     metricQuery = ({namespace, query, isRunningAverage}) ->
       if isRunningAverage
@@ -89,8 +111,8 @@ module.exports = class Metrics
           }
         )
         .map (partials) ->
-          dates = _.map partials, (partial) ->
-            partial.series?[0].values[0][0]
+          dates = _.map _.range(7), (day) ->
+            Date.now() - MS_IN_DAY * day
           values = _.map partials, (partial) ->
             partial.series?[0].values[0][1]
 
