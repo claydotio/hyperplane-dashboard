@@ -99,6 +99,23 @@ module.exports = class Metrics
             "time >= #{day - 2}d AND time < #{day - 1}d AND " +
             "joinDay = '#{day - 2}'"
       }
+      {
+        name: '3d k-factor'
+        isRunningAverage: true
+        numerator:
+          select: 'count(value)'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'join\' AND " +
+            "time >= #{day - 3}d AND time < #{day + 1}d AND " +
+            "inviterJoinDay = '#{day - 3}'"
+        denominator:
+          select: 'count(value)'
+          where: (date) ->
+            day = dateToDay date
+            "event=\'join\' AND " +
+            "time >= #{day - 3}d AND time < #{day - 2}d"
+      }
     ].reverse()
 
     metricQuery = ({namespace, query, isRunningAverage}) ->
