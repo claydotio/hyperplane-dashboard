@@ -116,6 +116,33 @@ module.exports = class Metrics
             "event=\'join\' AND " +
             "time >= #{day - 3}d AND time < #{day - 2}d"
       }
+      {
+        name: 'session length (ms)'
+        numerator:
+          select: 'sum(value)'
+          where: 'event=\'session\''
+        denominator:
+          select: 'count(distinct(sessionId))'
+          where: 'event=\'session\''
+      }
+      {
+        name: 'pages / session'
+        numerator:
+          select: 'count(value)'
+          where: 'event=\'pageview\''
+        denominator:
+          select: 'count(distinct(sessionId))'
+          where: 'event=\'pageview\''
+      }
+      {
+        name: 'un-bounce rate'
+        numerator:
+          select: 'count(distinct(sessionId))'
+          where: 'event=\'session\' AND sessionEvents=\'1\''
+        denominator:
+          select: 'count(distinct(sessionId))'
+          where: 'event=\'session\''
+      }
     ].reverse()
 
     metricQuery = ({namespace, query, isRunningAverage}) ->
