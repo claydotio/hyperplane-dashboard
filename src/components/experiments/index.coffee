@@ -12,30 +12,44 @@ module.exports = class Experiments
   constructor: ({model}) ->
     experiments = model.experiment.getAll()
 
-    @selectedIndex = new Rx.BehaviorSubject 0
+    @selectedIdStreams = new Rx.BehaviorSubject experiments.map (experiments) ->
+      _.first(experiments).id
+    @selectedId = @selectedIdStreams.switch()
     @$experimentResults = new ExperimentResults({
-      experiment: @selectedIndex.flatMapLatest (index) ->
-        experiments.map (experiments) ->
-          experiments[index]
+      model
+      experiment: @selectedId.flatMapLatest (id) =>
+        experiments.map (experiments) =>
+          id ?= @defaultId experiments
+          _.find experiments, {id}
     })
 
     @state = z.state
       experiments: experiments
-      selectedIndex: @selectedIndex
+      selectedId: @selectedId
 
-  select: (index) =>
-    @selectedIndex.onNext index
+  select: (experimentId) =>
+    @selectedIdStreams.onNext Rx.Observable.just experimentId
+
+  defaultId: (experiments = []) ->
+    experiments[0]?.id
 
   render: =>
-    {experiments, selectedIndex} = @state.getValue()
+    {experiments, selectedId} = @state.getValue()
+    selectedId ?= @defaultId experiments
 
     z '.z-experiments',
       z '.list',
-        _.map experiments, (experiment, index) =>
-          z '.list-item',
-            className: z.classKebab {isSelected: index is selectedIndex}
-            onclick: =>
-              @select index
-            experiment.key
+        _.map _.groupBy(experiments, 'namespace'), (experiments, namespace) =>
+          z '.namespace',
+            namespace
+            _.map experiments, (experiment) =>
+              z '.experiment',
+                className: z.classKebab {
+                  isSelected: experiment.id is selectedId
+                }
+                onclick: =>
+                  @select experiment.id
+                experiment.key
+
       z '.results',
         @$experimentResults
