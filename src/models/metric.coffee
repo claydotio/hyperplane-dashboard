@@ -53,8 +53,8 @@ module.exports = class Metric
             select: 'sum(value)'
             where: (day) ->
               "event=\'revenue\' AND " +
-              "time >= #{day - 3}d AND time < #{day}d AND " +
-              "joinDay = '#{day - 3}'"
+              "time >= #{day - 2}d AND time < #{day + 1}d AND " +
+              "joinDay = '#{day - 2}'"
         }
         {
           name: '2d SPS'
@@ -63,14 +63,14 @@ module.exports = class Metric
             select: 'count(value)'
             where: (day) ->
               "event=\'send\' AND " +
-              "time >= #{day - 2}d AND time < #{day}d AND " +
-              "joinDay = '#{day - 2}'"
+              "time >= #{day - 1}d AND time < #{day + 1}d AND " +
+              "joinDay = '#{day - 1}'"
           denominator:
             select: 'count(distinct(userId))'
             where: (day) ->
               "event=\'send\' AND " +
-              "time >= #{day - 2}d AND time < #{day - 1}d AND " +
-              "joinDay = '#{day - 2}'"
+              "time >= #{day - 1}d AND time < #{day}d AND " +
+              "joinDay = '#{day - 1}'"
         }
         {
           name: '3d k-factor'
@@ -79,13 +79,13 @@ module.exports = class Metric
             select: 'count(value)'
             where: (day) ->
               "event=\'join\' AND " +
-              "time >= #{day - 3}d AND time < #{day}d AND " +
-              "inviterJoinDay = '#{day - 3}'"
+              "time >= #{day - 2}d AND time < #{day + 1}d AND " +
+              "inviterJoinDay = '#{day - 2}'"
           denominator:
             select: 'count(value)'
             where: (day) ->
               "event=\'join\' AND " +
-              "time >= #{day - 3}d AND time < #{day - 2}d"
+              "time >= #{day - 2}d AND time < #{day - 1}d"
         }
         {
           name: 'session length (ms)'

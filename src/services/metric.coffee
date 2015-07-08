@@ -25,8 +25,8 @@ partialWhereFn = (whereFn, where) ->
     "#{result} AND #{where}"
 
 singleQuery = (model, {query, fromDay, toDay}) ->
-  where = "#{query.where(fromDay)} AND " +
-          "time >= #{fromDay}d AND time <= #{toDay}d"
+  where = "#{query.where()} AND " +
+          "time >= #{fromDay}d AND time < #{toDay + 1}d"
   model.event.query queryify _.defaults {
     where: where
   }, query
