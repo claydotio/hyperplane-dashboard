@@ -3,9 +3,6 @@ request = require 'clay-request'
 
 config = require '../config'
 
-dateToDay = (date) ->
-  Math.floor(date / 1000 / 60 / 60 / 24)
-
 module.exports = class Metric
   constructor: ({@accessTokenStream}) -> null
 
@@ -16,37 +13,35 @@ module.exports = class Metric
           name: 'DAU'
           numerator:
             select: 'count(distinct(userId))'
-            where: 'event=\'view\''
+            where: -> 'event=\'view\''
         }
         {
           name: 'egp / view'
           numerator:
             select: 'count(value)'
-            where: 'event=\'egp\''
+            where: -> 'event=\'egp\''
           denominator:
             select: 'count(value)'
-            where: 'event=\'view\''
+            where: -> 'event=\'view\''
         }
         {
           name: 'Revenue'
           numerator:
             select: 'count(value)'
-            where: 'event=\'revenue\''
+            where: -> 'event=\'revenue\''
         }
         {
           name: 'D1 Retention'
           isRunningAverage: true
           numerator:
             select: 'count(distinct(userId))'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'view\' AND " +
               "time >= #{day}d AND time < #{day + 1}d AND " +
               "joinDay = '#{day - 1}'"
           denominator:
             select: 'count(distinct(userId))'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'view\' AND " +
               "time >= #{day - 1}d AND time < #{day}d AND " +
               "joinDay = '#{day - 1}'"
@@ -56,10 +51,9 @@ module.exports = class Metric
           isRunningAverage: true
           numerator:
             select: 'sum(value)'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'revenue\' AND " +
-              "time >= #{day - 3}d AND time < #{day + 1}d AND " +
+              "time >= #{day - 3}d AND time < #{day}d AND " +
               "joinDay = '#{day - 3}'"
         }
         {
@@ -67,15 +61,13 @@ module.exports = class Metric
           isRunningAverage: true
           numerator:
             select: 'count(value)'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'send\' AND " +
-              "time >= #{day - 2}d AND time < #{day + 1}d AND " +
+              "time >= #{day - 2}d AND time < #{day}d AND " +
               "joinDay = '#{day - 2}'"
           denominator:
             select: 'count(distinct(userId))'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'send\' AND " +
               "time >= #{day - 2}d AND time < #{day - 1}d AND " +
               "joinDay = '#{day - 2}'"
@@ -85,15 +77,13 @@ module.exports = class Metric
           isRunningAverage: true
           numerator:
             select: 'count(value)'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'join\' AND " +
-              "time >= #{day - 3}d AND time < #{day + 1}d AND " +
+              "time >= #{day - 3}d AND time < #{day}d AND " +
               "inviterJoinDay = '#{day - 3}'"
           denominator:
             select: 'count(value)'
-            where: (date) ->
-              day = dateToDay date
+            where: (day) ->
               "event=\'join\' AND " +
               "time >= #{day - 3}d AND time < #{day - 2}d"
         }
@@ -101,27 +91,27 @@ module.exports = class Metric
           name: 'session length (ms)'
           numerator:
             select: 'sum(value)'
-            where: 'event=\'session\''
+            where: -> 'event=\'session\''
           denominator:
             select: 'count(distinct(sessionId))'
-            where: 'event=\'session\''
+            where: -> 'event=\'session\''
         }
         {
           name: 'pages / session'
           numerator:
             select: 'count(value)'
-            where: 'event=\'pageview\''
+            where: -> 'event=\'pageview\''
           denominator:
             select: 'count(distinct(sessionId))'
-            where: 'event=\'pageview\''
+            where: -> 'event=\'pageview\''
         }
         {
           name: 'un-bounce rate'
           numerator:
             select: 'count(distinct(sessionId))'
-            where: 'event=\'session\' AND sessionEvents=\'1\''
+            where: -> 'event=\'session\' AND sessionEvents=\'1\''
           denominator:
             select: 'count(distinct(sessionId))'
-            where: 'event=\'session\''
+            where: -> 'event=\'session\''
         }
       ]

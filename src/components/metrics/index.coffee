@@ -3,26 +3,11 @@ _ = require 'lodash'
 Rx = require 'rx-lite'
 
 Chart = require '../chart'
+MetricService = require '../../services/metric'
+util = require '../../lib/util'
 
 if window?
   require './index.styl'
-
-MS_IN_DAY = 1000 * 60 * 60 * 24
-
-queryify = ({select, from, where, groupBy}) ->
-  q = "SELECT #{select} FROM #{from}"
-  if where
-    q += " WHERE #{where}"
-  if groupBy
-    q += " GROUP BY #{groupBy}"
-
-  return q
-
-dateToDay = (date) ->
-  Math.floor(date / 1000 / 60 / 60 / 24)
-
-forkJoin = (observables...) ->
-  Rx.Observable.combineLatest _.flatten(observables), (results...) -> results
 
 module.exports = class Metrics
   constructor: ({model}) ->
@@ -32,66 +17,11 @@ module.exports = class Metrics
 
     metrics = model.metric.getAll()
 
-    metricQuery = ({namespace, query, isRunningAverage}) ->
-      if isRunningAverage
-        forkJoin _.map(_.range(7), (day) ->
-          model.event.query queryify {
-            select: query.select
-            from: namespace
-            where: query.where Date.now() - MS_IN_DAY * day
-          }
-        )
-        .map (partials) ->
-          dates = _.map _.range(7), (day) ->
-            Date.now() - MS_IN_DAY * day
-          values = _.map partials, (partial) ->
-            partial.series?[0].values[0][1]
-
-          {dates, values}
-
-      else
-        model.event.query queryify {
-          select: query.select
-          from: namespace
-          where: "#{query.where} AND time >= now() - 7d"
-          groupBy: 'time(1d)'
-        }
-        .map (query) ->
-          [dates, values] = _.zip query.series?[0].values...
-          {dates, values}
-
-    metricResults = (metric, namespace) ->
-      numerator = metricQuery {
-        namespace
-        query: metric.numerator
-        isRunningAverage: metric.isRunningAverage
-      }
-
-      denominator = if metric.denominator
-        metricQuery {
-          namespace
-          query: metric.denominator
-          isRunningAverage: metric.isRunningAverage
-        }
-      else
-        Rx.Observable.just null
-
-      forkJoin numerator, denominator
-      .map ([numerator, denominator]) ->
-        dates = numerator.dates
-        values = if denominator
-          _.zipWith numerator.values, denominator.values, (num, den) ->
-            num / den
-        else
-          numerator.values
-
-        return {values, dates}
-
-    chartedMetrics = forkJoin [metrics, namespaces]
+    chartedMetrics = util.forkJoin [metrics, namespaces]
       .flatMapLatest ([metrics, namespaces]) ->
-        forkJoin _.map metrics, (metric) ->
-          forkJoin _.map namespaces, (namespace) ->
-            metricResults metric, namespace
+        util.forkJoin _.map metrics, (metric) ->
+          util.forkJoin _.map namespaces, (namespace) ->
+            MetricService.query model, {metric, namespace, groupBy: 'time(1d)'}
           .map (series) ->
             data = new google.visualization.DataTable()
 
@@ -100,7 +30,7 @@ module.exports = class Metrics
               data.addColumn 'number', namespaces
 
             values = _.pluck series, 'values'
-            dates = _.map series[0].dates, (date) -> new Date date
+            dates = series[0].dates
 
             data.addRows _.zip [dates].concat(values)...
 
