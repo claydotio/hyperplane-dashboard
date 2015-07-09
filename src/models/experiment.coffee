@@ -12,3 +12,10 @@ module.exports = class Experiment
         method: 'get'
         headers:
           Authorization: "Token #{@accessTokenStream.getValue()}"
+
+  create: (body) =>
+    request config.HYPERPLANE_API_URL + '/experiments',
+      method: 'post'
+      body: body
+      headers:
+        Authorization: "Token #{@accessTokenStream.getValue()}"

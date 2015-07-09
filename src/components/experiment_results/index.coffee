@@ -43,8 +43,9 @@ module.exports = class ExperimentResults
       [metric.name].concat _.pluck series, 'aggregate'
 
     z '.z-experiment-results',
-      z '.name',
-        "#{experiment?.namespace} : #{experiment?.key}"
+      z '.about',
+        _.map experiment, (val, key) ->
+          z '.tag', "#{key}: #{val}"
       z '.graph'
       z '.tabs',
         z @$tabs,
