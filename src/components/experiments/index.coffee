@@ -25,8 +25,6 @@ module.exports = class Experiments
     newExperimentForm = _.transform
       key:
         subject: new Rx.BehaviorSubject ''
-      namespace:
-        subject: new Rx.BehaviorSubject ''
       globalPercent:
         subject: new Rx.BehaviorSubject ''
       choices:
@@ -122,17 +120,14 @@ module.exports = class Experiments
             $icon: z @$plus, {icon: 'plus', isDark: true}
             onclick: =>
               @state.set isCreating: true
-        _.map _.groupBy(experiments, 'namespace'), (experiments, namespace) =>
-          z '.namespace',
-            namespace
-            _.map experiments, (experiment) =>
-              z '.experiment',
-                className: z.classKebab {
-                  isSelected: experiment.id is selectedId
-                }
-                onclick: =>
-                  @select experiment.id
-                experiment.key
+        _.map experiments, (experiment) =>
+          z '.experiment',
+            className: z.classKebab {
+              isSelected: experiment.id is selectedId
+            }
+            onclick: =>
+              @select experiment.id
+            experiment.key
 
       z '.results',
         @$experimentResults

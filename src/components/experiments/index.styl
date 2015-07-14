@@ -18,18 +18,15 @@ json('zorium-paper/colors.json')
       justify-content: center
       padding: 20px
 
-    > .namespace
-      padding: 8px 16px
+    > .experiment
+      padding-left: 16px
 
-      > .experiment
-        padding-left: 16px
+      &:hover
+        cursor: pointer
+        background: rgba(0, 0, 0, 0.03)
 
-        &:hover
-          cursor: pointer
-          background: rgba(0, 0, 0, 0.03)
-
-        &.is-selected
-          background: rgba(0, 0, 0, 0.06)
+      &.is-selected
+        background: rgba(0, 0, 0, 0.06)
 
   > .results
     flex: 1

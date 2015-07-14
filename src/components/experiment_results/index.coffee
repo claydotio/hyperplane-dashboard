@@ -25,7 +25,6 @@ module.exports = class ExperimentResults
             util.forkJoin _.map experiment.choices, (choice) ->
               MetricService.query model, {
                 metric
-                namespace: experiment.namespace
                 where: "#{experiment.key}='#{choice}'"
               }
             .map (series) ->

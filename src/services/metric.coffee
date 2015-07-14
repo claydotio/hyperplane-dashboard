@@ -17,20 +17,30 @@ queryify = ({select, from, where, groupBy}) ->
 
   return q
 
-partialWhereFn = (whereFn, where) ->
+partialWhereFn = (whereFn = null, where) ->
   return (args...) ->
+    unless whereFn
+      return where
+
     result = whereFn args...
     unless where
       return result
+
     "#{result} AND #{where}"
 
 singleQuery = (model, {query, fromDay, toDay}) ->
-  where = "#{query.where()} AND " +
+  hasWhere = Boolean query.where()
+  where = "#{if hasWhere then query.where() + ' AND ' else ''}" +
           "time >= #{fromDay}d AND time < #{toDay + 1}d"
+  x = queryify _.defaults {
+    where: where
+  }, query
   model.event.query queryify _.defaults {
     where: where
   }, query
   .map (query) ->
+    if _.isEmpty query
+      return null
     [dates, values] = _.zip query.series?[0].values...
     dates = _.map dates, (date) -> new Date date
     {dates, values}
@@ -50,23 +60,23 @@ runningAverageQuery = (model, {query, fromDay, toDay}) ->
     {dates, values}
 
 class MetricService
-  query: (model, {metric, namespace, groupBy, where}) ->
+  query: (model, {metric, where}) ->
     # FIXME: magic number 7
     fromDay = dateToDay new Date Date.now() - MS_IN_DAY * 7
     toDay = dateToDay new Date()
     numeratorQuery = {
       select: metric.numerator.select
-      from: namespace
+      from: metric.numerator.from
       where: partialWhereFn metric.numerator.where, where
-      groupBy
+      groupBy: if metric.isRunningAverage then null else 'time(1d)'
     }
 
     denominatorQuery = if metric.denominator
       {
         select: metric.denominator.select
-        from: namespace
+        from: metric.denominator.from
         where: partialWhereFn metric.denominator.where, where
-        groupBy
+        groupBy: if metric.isRunningAverage then null else 'time(1d)'
       }
     else
       null
@@ -86,10 +96,17 @@ class MetricService
 
     util.forkJoin numerator, denominator
     .map ([numerator, denominator]) ->
+      unless numerator
+        return null
+
       dates = numerator.dates
       values = if denominator
         _.zipWith numerator.values, denominator.values, (num, den) ->
-          num / den
+          quotient = num / den
+          if _.isNaN(quotient)
+            null
+          else
+            quotient
       else
         numerator.values
 
