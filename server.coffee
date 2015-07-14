@@ -59,12 +59,12 @@ app.use cookieParser()
 
 app.use '/healthcheck', (req, res, next) ->
   Promise.settle [
-    Promise.cast(request(config.API_URL + '/ping'))
+    Promise.cast(request(config.HYPERPLANE_API_URL + '/ping'))
       .timeout HEALTHCHECK_TIMEOUT
   ]
-  .spread (api) ->
+  .spread (hyperplane) ->
     result =
-      api: api.isFulfilled()
+      hyperplane: hyperplane.isFulfilled()
 
     isHealthy = _.every _.values result
     if isHealthy
