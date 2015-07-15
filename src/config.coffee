@@ -6,21 +6,16 @@ HOST = process.env.HYPERPLANE_DASHBOARD_HOST or
     REPLACE_ENV_HYPERPLANE_DASHBOARD_HOST or
   'localhost'
 
-# Avoid webpack include
-serverEnv = process.env
-
 hostToHostname = (host) ->
   host.split(':')[0]
 
 module.exports =
   AUTH_COOKIE: 'accessToken'
-  # Do not embed password at build-time (process.env.PSWD)
-  HYPERPLANE_ADMIN_PASSWORD: serverEnv?.HYPERPLANE_ADMIN_PASSWORD or
+  HYPERPLANE_ADMIN_PASSWORD: process.env.HYPERPLANE_ADMIN_PASSWORD or
           REPLACE_ENV_HYPERPLANE_ADMIN_PASSWORD? and
             REPLACE_ENV_HYPERPLANE_ADMIN_PASSWORD or
           'insecurepassword'
-  HYPERPLANE_API_URL: serverEnv?.HYPERPLANE_API_URL or
-          process.env.PUBLIC_HYPERPLANE_API_URL or
+  HYPERPLANE_API_URL: process.env.PUBLIC_HYPERPLANE_API_URL or
           REPLACE_ENV_PUBLIC_HYPERPLANE_API_URL? and
             REPLACE_ENV_PUBLIC_HYPERPLANE_API_URL or
           'http://localhost:50180'
@@ -34,5 +29,5 @@ module.exports =
     TEST: 'test'
   HOSTNAME: hostToHostname(HOST)
 
-  # Server only - Avoid webpack include
-  PORT: serverEnv.PORT or 3000
+  # Server only
+  PORT: process.env.PORT or 3000
