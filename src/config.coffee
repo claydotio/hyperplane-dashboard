@@ -15,7 +15,7 @@ module.exports =
           REPLACE_ENV_HYPERPLANE_ADMIN_PASSWORD? and
             REPLACE_ENV_HYPERPLANE_ADMIN_PASSWORD or
           'insecurepassword'
-  HYPERPLANE_API_URL: process.env.PUBLIC_HYPERPLANE_API_URL or
+  HYPERPLANE_API_URL: process.env.HYPERPLANE_API_URL or
           REPLACE_ENV_PUBLIC_HYPERPLANE_API_URL? and
             REPLACE_ENV_PUBLIC_HYPERPLANE_API_URL or
           'http://localhost:50180'
