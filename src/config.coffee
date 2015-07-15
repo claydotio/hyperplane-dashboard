@@ -30,4 +30,4 @@ module.exports =
   HOSTNAME: hostToHostname(HOST)
 
   # Server only
-  PORT: process.env.PORT or 3000
+  PORT: process.env.HYPERPLANE_DASHBOARD_PORT or 50190
