@@ -38,7 +38,7 @@ module.exports = class Experiments
     @$cancelButton = new Button()
 
     @selectedIdStreams = new Rx.BehaviorSubject experiments.map (experiments) ->
-      _.first(experiments).id
+      _.first(experiments)?.id
     @selectedId = @selectedIdStreams.switch()
     @$experimentResults = new ExperimentResults({
       model
@@ -129,5 +129,6 @@ module.exports = class Experiments
               @select experiment.id
             experiment.key
 
-      z '.results',
-        @$experimentResults
+      if selectedId
+        z '.results',
+          @$experimentResults

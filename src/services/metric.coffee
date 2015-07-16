@@ -32,14 +32,11 @@ singleQuery = (model, {query, fromDay, toDay}) ->
   hasWhere = Boolean query.where()
   where = "#{if hasWhere then query.where() + ' AND ' else ''}" +
           "time >= #{fromDay}d AND time < #{toDay + 1}d"
-  x = queryify _.defaults {
-    where: where
-  }, query
   model.event.query queryify _.defaults {
     where: where
   }, query
   .map (query) ->
-    if _.isEmpty query
+    if _.isEmpty(query) or query.error?
       return null
     [dates, values] = _.zip query.series?[0].values...
     dates = _.map dates, (date) -> new Date date
@@ -55,6 +52,8 @@ runningAverageQuery = (model, {query, fromDay, toDay}) ->
     dates = _.map _.range(toDay - fromDay), (day) ->
       new Date Date.now() - MS_IN_DAY * day
     values = _.map partials, (partial) ->
+      if _.isEmpty(partial) or partial.error?
+        return null
       partial.series?[0].values[0][1]
 
     {dates, values}
