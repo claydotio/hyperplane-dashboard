@@ -19,3 +19,9 @@ module.exports = class Experiment
       body: body
       headers:
         Authorization: "Token #{@accessTokenStream.getValue()}"
+
+  deleteById: (id) =>
+    request config.HYPERPLANE_API_URL + "/experiments/#{id}",
+      method: 'delete'
+      headers:
+        Authorization: "Token #{@accessTokenStream.getValue()}"
