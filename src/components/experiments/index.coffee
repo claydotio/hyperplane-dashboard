@@ -29,6 +29,8 @@ module.exports = class Experiments
         subject: new Rx.BehaviorSubject ''
       choices:
         subject: new Rx.BehaviorSubject ''
+      weights:
+        subject: new Rx.BehaviorSubject ''
     , (result, val, key) ->
       result[key] = _.defaults {$input: new Input value: val.subject}, val
     , {}
@@ -69,6 +71,8 @@ module.exports = class Experiments
           parseInt subjectValue
         when 'choices'
           _.map subjectValue.split(','), (choice) -> choice.trim()
+        when 'weights'
+          _.map subjectValue.split(','), (choice) -> parseInt(choice.trim(), 10)
         else
           subjectValue
     , {}
