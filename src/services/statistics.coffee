@@ -1,3 +1,7 @@
+ERROR_RATE = 0.05
+TAU = 0.5 # ???????? - free variable in significance
+FDR_THRESHOLD = 0.10
+
 class Statistics
   ##############################################################################
   # A/B test calculations                                                      #
@@ -13,25 +17,20 @@ class Statistics
     conclusiveResults = _.flatten _.map results, (result) ->
       control = result.series[0]
       _.map result.series, (alternate, index) ->
-        # FIXME constants
-        errorRate = 0.05
-        tau = 0.5 # ???????? - free variable in significance
-
-        # FIXME: assumes equal distribution
-        # FIXME: should be conversion rate
+        # TODO: verify conversion rate makes sense and distributions make sense
         xBar = control.aggregate /
-          (control.aggregate + alternate.aggregate)
+          (control.aggregateViews + control.aggregate + alternate.aggregate)
         yBar = alternate.aggregate /
-          (control.aggregate + alternate.aggregate)
+          (alternate.aggregateViews + control.aggregate + alternate.aggregate)
         n = control.aggregateViews + alternate.aggregateViews
 
         thetaHat = yBar - xBar
-        alpha = errorRate
+        alpha = ERROR_RATE
         V = 2 * (xBar * (1 - xBar) + yBar * (1 - yBar)) / n
 
         pHat = Math.sqrt(
-          (2 * Math.log(1 / alpha) - Math.log(V / (V + tau))) *
-          (V * (V + tau) / tau)
+          (2 * Math.log(1 / alpha) - Math.log(V / (V + TAU))) *
+          (V * (V + TAU) / TAU)
         )
 
         isConclusive = Math.abs(thetaHat) > pHat
@@ -58,8 +57,6 @@ class Statistics
 
       trueNull / results.length
 
-    # FIXME: const
-    FDRthreshold = 0.10
     N = conclusiveResults.length
     piZero = proportionTrueNull(conclusiveResults)
 
@@ -69,7 +66,7 @@ class Statistics
 
       i = index + 1
       FDR = piZero * pHat / (i * N)
-      isSignificant = (1 - FDR) > FDRthreshold
+      isSignificant = (1 - FDR) > FDR_THRESHOLD
 
       _.defaults {FDR, isSignificant}, result
 

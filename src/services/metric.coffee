@@ -4,6 +4,7 @@ Rx = require 'rx-lite'
 util = require '../lib/util'
 
 MS_IN_DAY = 1000 * 60 * 60 * 24
+DEFAULT_TIME_RANGE_DAYS = 7
 
 dateToDay = (date) ->
   Math.floor(date / 1000 / 60 / 60 / 24)
@@ -59,50 +60,37 @@ runningAverageQuery = (model, {query, fromDay, toDay}) ->
     {dates, values}
 
 class MetricService
-  # FIXME: cyclomatic complexity
   query: (model, {metric, where}) ->
-    # FIXME: magic number 7
-    fromDay = dateToDay new Date Date.now() - MS_IN_DAY * 7
+    fromDay = dateToDay new Date(
+      Date.now() - MS_IN_DAY * DEFAULT_TIME_RANGE_DAYS
+    )
     toDay = dateToDay new Date()
-    numeratorQuery = {
+
+    partialQuery = (query) ->
+      if metric.isRunningAverage
+        runningAverageQuery model, {fromDay, toDay, query: query}
+      else
+        singleQuery model, {fromDay, toDay, query: query}
+
+    numerator = partialQuery
       select: metric.numerator.select
       from: metric.numerator.from
       where: partialWhereFn metric.numerator.where, where
       groupBy: if metric.isRunningAverage then null else 'time(1d)'
-    }
 
-    denominatorQuery = if metric.denominator
-      {
+    denominator = if metric.denominator
+      partialQuery
         select: metric.denominator.select
         from: metric.denominator.from
         where: partialWhereFn metric.denominator.where, where
         groupBy: if metric.isRunningAverage then null else 'time(1d)'
-      }
-    else
-      null
-
-    viewsQuery =
-      select: 'count(distinct(userId))'
-      from: 'view'
-      where: -> where or ''
-
-    numerator = if metric.isRunningAverage
-      runningAverageQuery model, {fromDay, toDay, query: numeratorQuery}
-    else
-      singleQuery model, {fromDay, toDay, query: numeratorQuery}
-
-    denominator = if denominatorQuery
-      if metric.isRunningAverage
-        runningAverageQuery model, {fromDay, toDay, query: denominatorQuery}
-      else
-        singleQuery model, {fromDay, toDay, query: denominatorQuery}
     else
       Rx.Observable.just null
 
-    views = if metric.isRunningAverage
-      runningAverageQuery model, {fromDay, toDay, query: viewsQuery}
-    else
-      singleQuery model, {fromDay, toDay, query: viewsQuery}
+    views = partialQuery
+      select: 'count(distinct(userId))'
+      from: 'view'
+      where: -> where or ''
 
     util.forkJoin numerator, denominator, views
     .map ([numerator, denominator, views]) ->
