@@ -29,6 +29,8 @@ module.exports = class ExperimentResults
         .flatMapLatest ([metrics, experiment]) ->
           util.forkJoin _.map metrics, (metric) ->
             util.forkJoin _.map experiment.choices, (choice) ->
+              # FIXME: represent result as object with table matrix
+              # and separate metrics list
               MetricService.query model, {
                 metric
                 where: "#{experiment.key}='#{choice}'"

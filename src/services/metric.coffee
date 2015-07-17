@@ -84,7 +84,7 @@ class MetricService
     viewsQuery =
       select: 'count(distinct(userId))'
       from: 'view'
-      where: -> where
+      where: -> where or ''
 
     numerator = if metric.isRunningAverage
       runningAverageQuery model, {fromDay, toDay, query: numeratorQuery}
