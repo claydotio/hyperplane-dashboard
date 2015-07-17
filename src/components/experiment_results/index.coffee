@@ -8,6 +8,7 @@ log = require 'loglevel'
 Tabs = require '../tabs'
 util = require '../../lib/util'
 MetricService = require '../../services/metric'
+StatisticsService = require '../../services/statistics'
 
 if window?
   require './index.styl'
@@ -37,6 +38,8 @@ module.exports = class ExperimentResults
                 metric: metric
                 series: series
               }
+          .map StatisticsService.resultGridAnalysis
+
 
   delete: (model, experiment) ->
     model.experiment.deleteById experiment.id
@@ -48,7 +51,7 @@ module.exports = class ExperimentResults
     tabs = ['overview', 'explore']
 
     table = _.map results, ({metric, series}) ->
-      [metric.name].concat _.pluck series, 'aggregate'
+      [metric.name].concat series
 
     z '.z-experiment-results',
       z '.about',
@@ -78,8 +81,18 @@ module.exports = class ExperimentResults
                   header
           ].concat _.map table, (row) ->
             z 'tr',
-              _.map row, (value) ->
-                if _.isNumber(value) and value % 1 isnt 0
-                  value = value.toFixed 2
-                z 'td',
-                  value
+              _.map row, (cell) ->
+                if _.isString cell
+                  z 'td.is-label',
+                    cell
+                else
+                  {aggregate, isConclusive, isSignificant, xBar, yBar} = cell
+                  if aggregate % 1 isnt 0
+                    aggregate = aggregate.toFixed 2
+                  z 'td',
+                    className: z.classKebab {
+                      isConclusive
+                      isSignificant
+                      isBetter: yBar > xBar
+                    }
+                    aggregate

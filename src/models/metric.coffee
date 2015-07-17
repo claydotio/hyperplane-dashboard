@@ -25,9 +25,12 @@ module.exports = class Metric
             from: 'view'
         }
         {
-          name: 'Revenue'
+          name: 'Revenue / User'
           numerator:
-            select: 'count(userId)'
+            select: 'sum(value)'
+            from: 'revenue'
+          denominator:
+            select: 'count(distinct(userId))'
             from: 'revenue'
         }
         {

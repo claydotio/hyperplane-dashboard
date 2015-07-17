@@ -34,3 +34,15 @@ json('zorium-paper/colors.json')
 
         > td, > th
           padding: 16px
+
+        > td
+          background: $grey300
+
+          &.is-label
+            background: transparent
+
+          &.is-conclusive.is-significant
+            background: $red300
+
+          &.is-conclusive.is-significant.is-better
+            background: $green300

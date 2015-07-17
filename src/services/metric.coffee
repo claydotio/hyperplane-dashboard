@@ -59,6 +59,7 @@ runningAverageQuery = (model, {query, fromDay, toDay}) ->
     {dates, values}
 
 class MetricService
+  # FIXME: cyclomatic complexity
   query: (model, {metric, where}) ->
     # FIXME: magic number 7
     fromDay = dateToDay new Date Date.now() - MS_IN_DAY * 7
@@ -80,6 +81,11 @@ class MetricService
     else
       null
 
+    viewsQuery =
+      select: 'count(distinct(userId))'
+      from: 'view'
+      where: -> where
+
     numerator = if metric.isRunningAverage
       runningAverageQuery model, {fromDay, toDay, query: numeratorQuery}
     else
@@ -93,8 +99,13 @@ class MetricService
     else
       Rx.Observable.just null
 
-    util.forkJoin numerator, denominator
-    .map ([numerator, denominator]) ->
+    views = if metric.isRunningAverage
+      runningAverageQuery model, {fromDay, toDay, query: viewsQuery}
+    else
+      singleQuery model, {fromDay, toDay, query: viewsQuery}
+
+    util.forkJoin numerator, denominator, views
+    .map ([numerator, denominator, views]) ->
       unless numerator
         return null
 
@@ -110,7 +121,8 @@ class MetricService
         numerator.values
 
       aggregate = _.sum(values) / values.length
+      aggregateViews = _.sum(views)
 
-      return {values, dates, aggregate}
+      return {values, dates, aggregate, aggregateViews}
 
 module.exports = new MetricService()
