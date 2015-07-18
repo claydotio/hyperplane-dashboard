@@ -87,13 +87,26 @@ module.exports = class ExperimentResults
                   z 'td.is-label',
                     cell
                 else
-                  {aggregate, isConclusive, isSignificant, xBar, yBar} = cell
-                  if aggregate % 1 isnt 0
-                    aggregate = aggregate.toFixed 2
+                  {aggregate, isConclusive, isSignificant,
+                    xBar, yBar, percentChange, interval} = cell
+                  interval = interval
                   z 'td',
                     className: z.classKebab {
                       isConclusive
                       isSignificant
                       isBetter: yBar > xBar
                     }
-                    aggregate
+                    z 'span',
+                      if aggregate % 1 isnt 0
+                        aggregate.toFixed(2)
+                      else
+                        aggregate
+                    ' ('
+                    z 'span.percent',
+                      className: z.classKebab {
+                        isNegative: percentChange < 0
+                        isNeutral: percentChange is 0
+                      }
+                      "#{if percentChange > 0 then '+' else ''}" +
+                      "#{(percentChange * 100).toFixed(2)}%"
+                    " ±#{interval.toFixed(2)})"

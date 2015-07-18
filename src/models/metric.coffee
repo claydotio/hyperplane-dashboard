@@ -11,6 +11,7 @@ module.exports = class Metric
       [
         {
           name: 'DAU'
+          isGroupSizeDependent: true
           numerator:
             select: 'count(distinct(userId))'
             from: 'view'
