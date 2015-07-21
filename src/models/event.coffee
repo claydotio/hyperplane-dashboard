@@ -34,8 +34,8 @@ module.exports = class Event
     q = _.pluck(queue, 'q').join '\n'
 
     request config.HYPERPLANE_API_URL + '/events',
-      method: 'get'
-      qs:
+      method: 'post'
+      body:
         q: q
       headers:
         Authorization: "Token #{@accessTokenStream.getValue()}"
