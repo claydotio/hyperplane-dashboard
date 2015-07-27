@@ -34,22 +34,22 @@ module.exports = class Metric
         #     select: 'count(distinct(userId))'
         #     from: 'revenue'
         # }
-        # {
-        #   name: 'D1 Retention'
-        #   isRunningAverage: true
-        #   numerator:
-        #     select: 'count(distinct(userId))'
-        #     from: 'view'
-        #     where: (day) ->
-        #       "time >= #{day}d AND time < #{day + 1}d AND " +
-        #       "joinDay = '#{day - 1}'"
-        #   denominator:
-        #     select: 'count(distinct(userId))'
-        #     from: 'view'
-        #     where: (day) ->
-        #       "time >= #{day - 1}d AND time < #{day}d AND " +
-        #       "joinDay = '#{day - 1}'"
-        # }
+        {
+          name: 'D1 Retention'
+          isRunningAverage: true
+          numerator:
+            select: 'count(distinct(userId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{day}d AND time < #{day + 1}d AND " +
+              "joinDay = '#{day - 1}'"
+          denominator:
+            select: 'count(distinct(userId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{day - 1}d AND time < #{day}d AND " +
+              "joinDay = '#{day - 1}'"
+        }
         # {
         #   name: '3d LTV'
         #   isRunningAverage: true
