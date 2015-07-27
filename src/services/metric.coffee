@@ -60,7 +60,9 @@ runningAverageQuery = (model, {query, fromDay, toDay}) ->
     {dates, values}
 
 class MetricService
-  query: (model, {metric, where}) ->
+  query: (model, {metric, where, hasViews}) ->
+    hasViews ?= true
+
     fromDay = dateToDay new Date(
       Date.now() - MS_IN_DAY * DEFAULT_TIME_RANGE_DAYS
     )
@@ -87,10 +89,13 @@ class MetricService
     else
       Rx.Observable.just null
 
-    views = partialQuery
-      select: 'count(distinct(userId))'
-      from: 'view'
-      where: -> where or ''
+    views = if hasViews
+      partialQuery
+        select: 'count(distinct(userId))'
+        from: 'view'
+        where: -> where or ''
+    else
+      Rx.Observable.just null
 
     util.forkJoin numerator, denominator, views
     .map ([numerator, denominator, views]) ->
@@ -109,7 +114,7 @@ class MetricService
         numerator.values
 
       aggregate = _.sum(values) / values.length
-      aggregateViews = _.sum(views)
+      aggregateViews = if hasViews then _.sum(views) else null
 
       return {values, dates, aggregate, aggregateViews}
 

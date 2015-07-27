@@ -16,7 +16,7 @@ module.exports = class Metrics
     chartedMetrics = metrics
       .flatMapLatest (metrics) ->
         util.forkJoin _.map metrics, (metric) ->
-          MetricService.query model, {metric}
+          MetricService.query model, {metric, hasViews: false}
           .map ({values, dates} = {}) ->
             data = new google.visualization.DataTable()
 
