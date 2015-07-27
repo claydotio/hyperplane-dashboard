@@ -1,5 +1,4 @@
 Rx = require 'rx-lite'
-request = require 'clay-request'
 
 config = require '../config'
 
@@ -10,17 +9,17 @@ b64encode = (str) ->
     new Buffer(str).toString('base64')
 
 module.exports = class User
-  constructor: ({@accessTokenStream}) -> null
+  constructor: ({@accessTokenStream, @proxy}) -> null
 
-  getMe: ->
+  getMe: =>
     auth = "admin:#{config.HYPERPLANE_ADMIN_PASSWORD}"
 
-    Rx.Observable.defer ->
-      request config.HYPERPLANE_API_URL + '/users',
+    Rx.Observable.defer =>
+      @proxy config.HYPERPLANE_API_URL + '/users',
         method: 'post'
         headers:
           Authorization: "Basic #{b64encode auth}"
 
-  create: ->
-    request config.HYPERPLANE_API_URL + '/users',
+  create: =>
+    @proxy config.HYPERPLANE_API_URL + '/users',
       method: 'post'

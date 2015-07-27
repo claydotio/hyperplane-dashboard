@@ -1,6 +1,5 @@
 _ = require 'lodash'
 Rx = require 'rx-lite'
-request = require 'clay-request'
 
 config = require '../config'
 
@@ -12,11 +11,13 @@ else
   require bluebird
 
 module.exports = class Event
-  constructor: ({@accessTokenStream}) ->
+  constructor: ({@accessTokenStream, @proxy}) ->
     @queryQueue = []
 
   query: (q) =>
     Rx.Observable.defer =>
+      unless window?
+        return Rx.Observable.just null
       if _.isEmpty @queryQueue
         setTimeout =>
           @_batchQuery(@queryQueue)
@@ -41,7 +42,8 @@ module.exports = class Event
   _batchQuery: (queue) =>
     q = _.pluck(queue, 'q').join '\n'
 
-    request config.HYPERPLANE_API_URL + '/events',
+    @proxy config.HYPERPLANE_API_URL + '/events',
+      proxyCache: true
       method: 'post'
       body:
         q: q

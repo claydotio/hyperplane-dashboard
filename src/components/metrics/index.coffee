@@ -18,6 +18,8 @@ module.exports = class Metrics
         util.forkJoin _.map metrics, (metric) ->
           MetricService.query model, {metric, hasViews: false}
           .map ({values, dates} = {}) ->
+            unless google?
+              return null
             data = new google.visualization.DataTable()
 
             data.addColumn 'date', 'Date'
