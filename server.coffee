@@ -104,7 +104,8 @@ app.use (req, res, next) ->
     res.send '<!DOCTYPE html>' + html
   .catch (err) ->
     if err.html
-      log.error err
+      # FIXME: use syncronous zorium rendering
+      # log.error err
       res.send '<!DOCTYPE html>' + err.html
     else
       next err

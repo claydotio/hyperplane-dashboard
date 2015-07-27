@@ -1,3 +1,6 @@
+_ = require 'lodash'
+log = require 'loglevel'
+
 ERROR_RATE = 0.05
 TAU = 0.5 # ???????? - free variable in significance
 FDR_THRESHOLD = 0.10
@@ -82,6 +85,11 @@ class Statistics
   # //pages.optimizely.com/rs/optimizely/images/stats_engine_technical_paper.pdf
   ##############################################################################
   resultGridAnalysis: (results) ->
+    hasNull = _.some _.map results, (result) ->
+      result.series[0] is null
+    if hasNull
+      log.info 'invalid results, statistics aborted'
+      return null
     #######################
     # Conclusive Results  #
     # See (2) in paper    #

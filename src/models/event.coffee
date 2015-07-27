@@ -1,7 +1,15 @@
+_ = require 'lodash'
 Rx = require 'rx-lite'
 request = require 'clay-request'
 
 config = require '../config'
+
+Promise = if window?
+  window.Promise
+else
+  # Avoid webpack include
+  bluebird = 'bluebird'
+  require bluebird
 
 module.exports = class Event
   constructor: ({@accessTokenStream}) ->
