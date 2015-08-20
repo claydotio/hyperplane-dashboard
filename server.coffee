@@ -16,7 +16,7 @@ Model = require './src/models'
 CookieService = require './src/services/cookie'
 
 MIN_TIME_REQUIRED_FOR_HSTS_GOOGLE_PRELOAD_MS = 10886400000 # 18 weeks
-HEALTHCHECK_TIMEOUT = 200
+HEALTHCHECK_TIMEOUT = 400
 
 Rx.config.Promise = Promise
 
