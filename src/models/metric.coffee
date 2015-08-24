@@ -3,6 +3,12 @@ request = require 'clay-request'
 
 config = require '../config'
 
+MS_IN_DAY = 1000 * 60 * 60 * 24
+
+dayToMS = (day) ->
+  timeZoneOffsetMS = (new Date()).getTimezoneOffset() * 60 * 1000
+  day * MS_IN_DAY + timeZoneOffsetMS
+
 module.exports = class Metric
   constructor: ({@accessTokenStream}) -> null
 
@@ -41,13 +47,13 @@ module.exports = class Metric
             select: 'count(distinct(userId))'
             from: 'view'
             where: (day) ->
-              "time >= #{day}d AND time < #{day + 1}d AND " +
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
               "joinDay = '#{day - 1}'"
           denominator:
             select: 'count(distinct(userId))'
             from: 'view'
             where: (day) ->
-              "time >= #{day - 1}d AND time < #{day}d AND " +
+              "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
               "joinDay = '#{day - 1}'"
         }
         # {

@@ -9,6 +9,10 @@ DEFAULT_TIME_RANGE_DAYS = 7
 dateToDay = (date) ->
   Math.floor(date / 1000 / 60 / 60 / 24)
 
+dayToMS = (day) ->
+  timeZoneOffsetMS = (new Date()).getTimezoneOffset() * 60 * 1000
+  day * MS_IN_DAY + timeZoneOffsetMS
+
 queryify = ({select, from, where, groupBy}) ->
   q = "SELECT #{select} FROM #{from}"
   if where
@@ -50,8 +54,8 @@ runningAverageQuery = (model, {query, fromDay, toDay}) ->
     }, query
   )
   .map (partials) ->
-    dates = _.map _.range(toDay - fromDay), (day) ->
-      new Date Date.now() - MS_IN_DAY * day
+    dates = _.map _.range(fromDay, toDay), (day) ->
+      new Date dayToMS day
     values = _.map partials, (partial) ->
       if _.isEmpty(partial) or partial.error?
         return null
