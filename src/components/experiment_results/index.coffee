@@ -13,9 +13,6 @@ StatisticsService = require '../../services/statistics'
 if window?
   require './index.styl'
 
-util.forkJoin = (observables...) ->
-  Rx.Observable.combineLatest _.flatten(observables), (results...) -> results
-
 module.exports = class ExperimentResults
   constructor: ({model, experiment}) ->
     selectedIndex = new Rx.BehaviorSubject 0
