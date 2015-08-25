@@ -29,7 +29,7 @@ module.exports = class HomePage
   render: =>
     {selectedIndex} = @state.getValue()
 
-    tabs = ['experiments', 'metrics']
+    tabs = ['metrics', 'experiments']
 
     z '.p-home',
       z @$menu,
