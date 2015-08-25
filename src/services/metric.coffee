@@ -15,42 +15,28 @@ dayToMS = (day) ->
 
 queryify = ({select, from, where, groupBy}) ->
   q = "SELECT #{select} FROM #{from}"
-  if where
+  if where?
     q += " WHERE #{where}"
-  if groupBy
+  if groupBy?
     q += " GROUP BY #{groupBy}"
 
   return q
 
 partialWhereFn = (whereFn = null, where) ->
   return (args...) ->
-    unless whereFn
+    unless whereFn?
       return where
 
     result = whereFn args...
-    unless where
+    unless where?
       return result
 
     "#{result} AND #{where}"
 
-singleQuery = (model, {query, fromDay, toDay}) ->
-  hasWhere = Boolean query.where()
-  where = "#{if hasWhere then query.where() + ' AND ' else ''}" +
-          "time >= #{fromDay}d AND time < #{toDay + 1}d"
-  model.event.query queryify _.defaults {
-    where: where
-  }, query
-  .map (query) ->
-    if _.isEmpty(query) or query.error?
-      return null
-    [dates, values] = _.zip query.series?[0].values...
-    dates = _.map dates, (date) -> new Date date
-    {dates, values}
-
-runningAverageQuery = (model, {query, fromDay, toDay}) ->
+dayRangeQuery = (model, {query, fromDay, toDay}) ->
   util.forkJoin _.map(_.range(toDay - fromDay), (day) ->
     model.event.query queryify _.defaults {
-      where: query.where toDay - day
+      where: query.where(toDay - day)
     }, query
   )
   .map (partials) ->
@@ -72,32 +58,38 @@ class MetricService
     )
     toDay = dateToDay new Date()
 
-    partialQuery = (query) ->
-      if metric.isRunningAverage
-        runningAverageQuery model, {fromDay, toDay, query: query}
-      else
-        singleQuery model, {fromDay, toDay, query: query}
-
-    numerator = partialQuery
-      select: metric.numerator.select
-      from: metric.numerator.from
-      where: partialWhereFn metric.numerator.where, where
-      groupBy: if metric.isRunningAverage then null else 'time(1d)'
+    numerator = dayRangeQuery model, {
+      fromDay
+      toDay
+      query:
+        select: metric.numerator.select
+        from: metric.numerator.from
+        where: partialWhereFn metric.numerator.where, where
+    }
 
     denominator = if metric.denominator
-      partialQuery
-        select: metric.denominator.select
-        from: metric.denominator.from
-        where: partialWhereFn metric.denominator.where, where
-        groupBy: if metric.isRunningAverage then null else 'time(1d)'
+      dayRangeQuery model, {
+        fromDay
+        toDay
+        query:
+          select: metric.denominator.select
+          from: metric.denominator.from
+          where: partialWhereFn metric.denominator.where, where
+      }
     else
       Rx.Observable.just null
 
     views = if hasViews
-      partialQuery
-        select: 'count(distinct(userId))'
-        from: 'view'
-        where: -> where or ''
+      dayRangeQuery model, {
+        fromDay
+        toDay
+        query:
+          select: 'count(distinct(userId))'
+          from: 'view'
+          where: partialWhereFn (day) ->
+            "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+          , where
+      }
     else
       Rx.Observable.just null
 
@@ -118,8 +110,7 @@ class MetricService
         numerator.values
 
       aggregate = _.sum(values) / values.length
-      aggregateViews = if hasViews then _.sum(views) else null
-
+      aggregateViews = if hasViews then _.sum(views.values) else null
       return {values, dates, aggregate, aggregateViews}
 
 module.exports = new MetricService()

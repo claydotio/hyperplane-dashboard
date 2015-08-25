@@ -21,6 +21,23 @@ module.exports = class Metric
           numerator:
             select: 'count(distinct(userId))'
             from: 'view'
+            where: (day) ->
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+        }
+        {
+          name: 'D1 Retention'
+          numerator:
+            select: 'count(distinct(userId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+              "joinDay = '#{day - 1}'"
+          denominator:
+            select: 'count(distinct(userId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
+              "joinDay = '#{day - 1}'"
         }
         # {
         #   name: 'egp / view'
@@ -40,22 +57,6 @@ module.exports = class Metric
         #     select: 'count(distinct(userId))'
         #     from: 'revenue'
         # }
-        {
-          name: 'D1 Retention'
-          isRunningAverage: true
-          numerator:
-            select: 'count(distinct(userId))'
-            from: 'view'
-            where: (day) ->
-              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
-              "joinDay = '#{day - 1}'"
-          denominator:
-            select: 'count(distinct(userId))'
-            from: 'view'
-            where: (day) ->
-              "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
-              "joinDay = '#{day - 1}'"
-        }
         # {
         #   name: '3d LTV'
         #   isRunningAverage: true
