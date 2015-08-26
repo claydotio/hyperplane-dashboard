@@ -34,9 +34,9 @@ partialWhereFn = (whereFn = null, where) ->
     "#{result} AND #{where}"
 
 dayRangeQuery = (model, {query, fromDay, toDay}) ->
-  util.forkJoin _.map(_.range(toDay - fromDay), (day) ->
+  util.forkJoin _.map(_.range(fromDay, toDay), (day) ->
     model.event.query queryify _.defaults {
-      where: query.where(toDay - day)
+      where: query.where(day)
     }, query
   )
   .map (partials) ->
