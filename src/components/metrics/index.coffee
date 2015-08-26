@@ -12,23 +12,31 @@ if window?
 module.exports = class Metrics
   constructor: ({model}) ->
     metrics = model.metric.getAll()
+    appNames = model.event.getAppNames()
 
-    chartedMetrics = metrics
-      .flatMapLatest (metrics) ->
+    chartedMetrics = util.forkJoin [metrics, appNames]
+      .flatMapLatest ([metrics, appNames]) ->
         util.forkJoin _.map metrics, (metric) ->
-          MetricService.query model, {metric, hasViews: false}
-          .map ({values, dates} = {}) ->
+          util.forkJoin _.map appNames, (appName) ->
+            where = "app = '#{appName}'"
+            MetricService.query model, {metric, where, hasViews: false}
+            .map ({dates, values, aggregate} = {}) ->
+              {dates, values, aggregate, appName}
+          .map (results) ->
             unless google?
               return null
             data = new google.visualization.DataTable()
 
             data.addColumn 'date', 'Date'
-            data.addColumn 'number', metric.name
+            _.map results, ({appName}) ->
+              data.addColumn 'number', appName
 
-            data.addRows _.zip dates, values
+            dates = results[0].dates
+            data.addRows _.zip dates, _.pluck(results, 'values')...
 
             {
               metric
+              results
               $chart: new Chart({
                 data: data
                 options: {
@@ -46,8 +54,26 @@ module.exports = class Metrics
 
   render: =>
     {chartedMetrics} = @state.getValue()
+    aggregateByApp = _.reduce chartedMetrics, (appResults, charted) ->
+      _.map charted.results, (result) ->
+        appResults[result.appName] ?= {}
+        appResults[result.appName][charted.metric.name] = result.aggregate
+      return appResults
+    , {}
 
     z '.z-metrics',
-      _.map chartedMetrics, ({metric, $chart}) ->
-        z '.metric',
-          $chart
+      z '.overview',
+        _.map aggregateByApp, (aggregates, appName) ->
+          z '.app',
+            z '.name',
+              appName
+            _.map aggregates, (aggregate, metric) ->
+              z 'tr.aggregate',
+                z 'td.name',
+                  metric
+                z 'td.value',
+                  aggregate.toFixed(2)
+      z '.graphs',
+        _.map chartedMetrics, ({metric, $chart}) ->
+          z '.metric',
+            $chart

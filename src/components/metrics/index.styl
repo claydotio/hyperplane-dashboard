@@ -3,8 +3,28 @@
 json('zorium-paper/colors.json')
 
 .z-metrics
-  > .metric
-    box-sizing: border-box
-    border: 2px solid $black26
-    padding: 16px
-    margin: 16px
+  > .overview
+    display: flex
+
+    > .app
+      flex: 1
+      margin: 16px
+      padding: 20px
+      background: $green500
+      color: $green500Text
+
+      > .name
+        zp-font-title()
+        color: $green500Text
+
+      > .aggregate
+        > .name
+          padding: 2px 16px 2px 0
+
+
+  > .graphs
+    > .metric
+      box-sizing: border-box
+      border: 2px solid $black26
+      padding: 16px
+      margin: 16px

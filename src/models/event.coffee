@@ -14,6 +14,21 @@ module.exports = class Event
   constructor: ({@accessTokenStream, @proxy}) ->
     @queryQueue = []
 
+  getAppNames: =>
+    Rx.Observable.defer =>
+      @proxy config.HYPERPLANE_API_URL + '/events',
+        proxyCache: true
+        method: 'post'
+        body:
+          q: 'SHOW TAG VALUES FROM view WITH KEY = app'
+        headers:
+          Authorization: "Token #{@accessTokenStream.getValue()}"
+      .then (res) ->
+        unless res.results
+          throw new Error 'Something went wrong...'
+
+        _.flatten res.results[0].series[0].values
+
   query: (q) =>
     Rx.Observable.defer =>
       unless window?
