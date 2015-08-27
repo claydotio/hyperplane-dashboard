@@ -6,6 +6,7 @@ Menu = require '../../components/menu'
 Tabs = require '../../components/tabs'
 Experiments = require '../../components/experiments'
 Metrics = require '../../components/metrics'
+MetaInfo = require '../../components/meta_info'
 
 if window?
   require './index.styl'
@@ -19,6 +20,7 @@ module.exports = class HomePage
     @$tabs = new Tabs({selectedIndex})
     @$experiments = new Experiments({model})
     @$metrics = new Metrics({model})
+    @$metaInfo = new MetaInfo({model})
 
     @state = z.state
       selectedIndex: selectedIndex
@@ -29,7 +31,7 @@ module.exports = class HomePage
   render: =>
     {selectedIndex} = @state.getValue()
 
-    tabs = ['metrics', 'experiments']
+    tabs = ['metrics', 'experiments', 'meta']
 
     z '.p-home',
       z @$menu,
@@ -42,3 +44,5 @@ module.exports = class HomePage
           @$experiments
         when 'metrics'
           @$metrics
+        when 'meta'
+          @$metaInfo

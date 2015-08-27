@@ -29,6 +29,36 @@ module.exports = class Event
 
         _.flatten res.results[0].series[0].values
 
+  getTags: =>
+    Rx.Observable.defer =>
+      @proxy config.HYPERPLANE_API_URL + '/events',
+        proxyCache: true
+        method: 'post'
+        body:
+          q: 'SHOW TAG KEYS FROM view'
+        headers:
+          Authorization: "Token #{@accessTokenStream.getValue()}"
+      .then (res) ->
+        unless res.results
+          throw new Error 'Something went wrong...'
+
+        _.flatten res.results[0].series[0].values
+
+  getTagValues: (tag) =>
+    Rx.Observable.defer =>
+      @proxy config.HYPERPLANE_API_URL + '/events',
+        proxyCache: true
+        method: 'post'
+        body:
+          q: "SHOW TAG VALUES FROM view WITH KEY = #{tag}"
+        headers:
+          Authorization: "Token #{@accessTokenStream.getValue()}"
+      .then (res) ->
+        unless res.results
+          throw new Error 'Something went wrong...'
+
+        _.flatten res.results[0].series[0].values
+
   query: (q) =>
     Rx.Observable.defer =>
       unless window?
