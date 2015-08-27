@@ -76,6 +76,49 @@ critz = (p) ->
     zval = (maxz + minz) * 0.5
   zval
 
+#######################
+# Conclusive Results  #
+# See (2) in paper    #
+#######################
+getCellConclusivity = (cell) ->
+  {result, controlResult} = cell
+
+  # TODO: verify conversion rate makes sense and distributions make sense
+  xBar = controlResult.aggregate / (
+    controlResult.aggregateViews +
+    controlResult.aggregate +
+    result.aggregate
+  )
+  yBar = result.aggregate /
+    (result.aggregateViews + controlResult.aggregate + result.aggregate)
+  n = controlResult.aggregateViews + result.aggregateViews
+
+  thetaHat = yBar - xBar
+  alpha = ERROR_RATE
+  V = 2 * (xBar * (1 - xBar) + yBar * (1 - yBar)) / n
+
+  pHat = Math.sqrt(
+    (2 * Math.log(1 / alpha) - Math.log(V / (V + TAU))) *
+    (V * (V + TAU) / TAU)
+  )
+
+  isConclusive = Math.abs(thetaHat) > pHat
+
+  {
+    isConclusive
+    pHat
+    xBar
+    yBar
+  }
+
+proportionTrueNull = (results) ->
+  trueNull = _.sum results, ({conclusivity}) ->
+    if not conclusivity.isConclusive
+      return 1
+    else
+      return 0
+
+  trueNull / results.length
 
 class Statistics
   ##############################################################################
@@ -84,131 +127,78 @@ class Statistics
   # Based on Stats Engine                                                      #
   # //pages.optimizely.com/rs/optimizely/images/stats_engine_technical_paper.pdf
   ##############################################################################
-  resultGridAnalysis: (results) ->
-    hasNull = _.some _.map results, (result) ->
-      result.series[0] is null
-    if hasNull
-      log.info 'invalid results, statistics aborted'
-      return null
-    #######################
-    # Conclusive Results  #
-    # See (2) in paper    #
-    #######################
-    conclusiveResults = _.flatten _.map results, (result) ->
-      control = result.series[0]
-      _.map result.series, (alternate, index) ->
-        # TODO: verify conversion rate makes sense and distributions make sense
-        xBar = control.aggregate /
-          (control.aggregateViews + control.aggregate + alternate.aggregate)
-        yBar = alternate.aggregate /
-          (alternate.aggregateViews + control.aggregate + alternate.aggregate)
-        n = control.aggregateViews + alternate.aggregateViews
+  resultAnalysis: (cells) ->
+    conclusiveResults = _.map cells, (cell) ->
+      {
+        cell: cell
+        conclusivity: getCellConclusivity cell
+      }
 
-        thetaHat = yBar - xBar
-        alpha = ERROR_RATE
-        V = 2 * (xBar * (1 - xBar) + yBar * (1 - yBar)) / n
-
-        pHat = Math.sqrt(
-          (2 * Math.log(1 / alpha) - Math.log(V / (V + TAU))) *
-          (V * (V + TAU) / TAU)
-        )
-
-        isConclusive = Math.abs(thetaHat) > pHat
-
-        {
-          control
-          metric: result.metric
-          isConclusive
-          pHat
-          xBar
-          yBar
-          metricName: result.metric.name
-          seriesIndex: index
-        }
 
     ######################
     # Actionable Results #
     # See (4) in paper   #
     ######################
-    proportionTrueNull = (results) ->
-      trueNull = _.sum results, ({isConclusive}) ->
-        if not isConclusive
-          return 1
-        else
-          return 0
-
-      trueNull / results.length
-
     N = conclusiveResults.length
     piZero = proportionTrueNull(conclusiveResults)
 
-    FDRresults =
-    _.map _.sortBy(conclusiveResults, 'pHat'), (result, index) ->
-      {pHat} = result
+    getPHat = ({conclusivity}) -> conclusivity.pHat
+
+    FDRresults = _.map _.sortBy(conclusiveResults, getPHat), (result, index) ->
+      {pHat} = result.conclusivity
 
       i = index + 1
       FDR = piZero * pHat / (i * N)
       isSignificant = (1 - FDR) > FDR_THRESHOLD
 
-      _.defaults {FDR, isSignificant}, result
+      _.defaults {
+        FDR: {
+          value: FDR
+          isSignificant
+        }
+      }, result
 
-    # Note that de-grouping removed series order information
-    groupedResults = _.groupBy FDRresults, 'metricName'
-    finalResults = _.map results, (result) ->
-      rowResults = \
-        _.sortBy groupedResults[result.metric.name], 'seriesIndex'
-      {
-        metric: result.metric
-        series: _.map result.series, (element, index) ->
-          _.defaults _.cloneDeep(element), rowResults[index]
-      }
+    confidenceResults = _.map FDRresults, (result) ->
+      {xBar, yBar, isConclusive} = result.conclusivity
+      {isSignificant} = result.FDR
 
+      mu = (xBar + yBar) / 2
+      delta = Math.sqrt(
+        1 / 2 *
+        _.sum [xBar, yBar], (xi) ->
+          Math.pow(xi - mu, 2)
+      )
 
-    confidenceIntervals = _.map finalResults, (result) ->
-      series = _.map result.series, (element) ->
-        {xBar, yBar, isConclusive, isSignificant,
-          control, aggregate, aggregateViews, metric} = element
+      q = ERROR_RATE
+      m = _.countBy(FDRresults, ({FDR}) -> FDR.isSignificant)
+      coverageLevel = if isSignificant
+      then (1 - q * m / N)
+      else (1 - q * (m + 1) / N)
 
-        mu = (xBar + yBar) / 2
-        delta = Math.sqrt(
-          1 / 2 *
-          _.sum [xBar, yBar], (xi) ->
-            Math.pow(xi - mu, 2)
-        )
+      z = critz(coverageLevel)
 
-        q = ERROR_RATE
-        m = _.countBy(FDRresults, 'isSignificant')
-        coverageLevel = if isSignificant
-        then (1 - q * m / N)
-        else (1 - q * (m + 1) / N)
+      low = yBar - z * delta / Math.sqrt(N)
+      high = yBar + z * delta / Math.sqrt(N)
 
-        z = critz(coverageLevel)
+      interval = z * delta / Math.sqrt(N) / yBar
 
-        low = yBar - z * delta / Math.sqrt(N)
-        high = yBar + z * delta / Math.sqrt(N)
+      # xBar and yBar are hacked to be between 0 and 1, here it's not
+      # necessary to do that so the data is better
+      # TODO: make sure this is valid
+      xBar2 = result.cell.controlResult.aggregate
+      yBar2 = result.cell.result.aggregate
+      # account for different group sizes when dealing with metrics
+      # that sum group totals (e.g. DAU)
+      if result.cell.metric.isGroupSizeDependent
+        xBar2 /= result.cell.controlResult.aggregateViews
+        yBar2 /= result.cell.result.aggregateViews
 
-        interval = z * delta / Math.sqrt(N) / yBar
+      percentChange = -1 * (1 - yBar2 / xBar2)
 
-        # xBar and yBar are hacked to be between 0 and 1, here it's not
-        # necessary to do that so the data is better
-        # TODO: make sure this is valid
-        xBar2 = control.aggregate
-        yBar2 = aggregate
-        # account for different group sizes when dealing with metrics
-        # that sum group totals (e.g. DAU)
-        if metric.isGroupSizeDependent
-          xBar2 /= control.aggregateViews
-          yBar2 /= aggregateViews
+      _.defaults {
+        confidence: {low, high, interval, percentChange}
+      }, result
 
-        percentChange = -1 * (1 - yBar2 / xBar2)
-
-        _.defaults {low, high, interval, percentChange}, element
-
-      {
-        metric: result.metric
-        series: series
-      }
-
-    return confidenceIntervals
+    return confidenceResults
 
 module.exports = new Statistics()

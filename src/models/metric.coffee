@@ -2,12 +2,9 @@ Rx = require 'rx-lite'
 request = require 'clay-request'
 
 config = require '../config'
+util = require '../lib/util'
 
-MS_IN_DAY = 1000 * 60 * 60 * 24
-
-dayToMS = (day) ->
-  timeZoneOffsetMS = (new Date()).getTimezoneOffset() * 60 * 1000
-  day * MS_IN_DAY + timeZoneOffsetMS
+dayToMS = util.dayToMS
 
 module.exports = class Metric
   constructor: ({@accessTokenStream}) -> null

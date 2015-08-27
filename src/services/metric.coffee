@@ -3,30 +3,13 @@ Rx = require 'rx-lite'
 
 util = require '../lib/util'
 
-MS_IN_DAY = 1000 * 60 * 60 * 24
 DEFAULT_TIME_RANGE_DAYS = 7
 
 dateToDay = (date) ->
   Math.floor(date / 1000 / 60 / 60 / 24)
 
-dayToMS = (day) ->
-  timeZoneOffsetMS = (new Date()).getTimezoneOffset() * 60 * 1000
-  day * MS_IN_DAY + timeZoneOffsetMS
-
-queryify = ({select, from, where, groupBy}) ->
-  q = "SELECT #{select} FROM #{from}"
-  if where?
-    q += " WHERE #{where}"
-  if groupBy?
-    q += " GROUP BY #{groupBy}"
-
-  return q
-
-partialWhereFn = (whereFn = null, where) ->
+partialWhereFn = (whereFn, where) ->
   return (args...) ->
-    unless whereFn?
-      return where
-
     result = whereFn args...
     unless where?
       return result
@@ -35,13 +18,13 @@ partialWhereFn = (whereFn = null, where) ->
 
 dayRangeQuery = (model, {query, fromDay, toDay}) ->
   util.forkJoin _.map(_.range(fromDay, toDay), (day) ->
-    model.event.query queryify _.defaults {
+    model.event.query _.defaults {
       where: query.where(day)
     }, query
   )
   .map (partials) ->
     dates = _.map _.range(fromDay, toDay), (day) ->
-      new Date dayToMS day
+      new Date util.dayToMS day
     values = _.map partials, (partial) ->
       if _.isEmpty(partial) or partial.error?
         return null
@@ -53,10 +36,8 @@ class MetricService
   query: (model, {metric, where, hasViews}) ->
     hasViews ?= true
 
-    fromDay = dateToDay new Date(
-      Date.now() - MS_IN_DAY * DEFAULT_TIME_RANGE_DAYS
-    )
     toDay = dateToDay new Date()
+    fromDay = toDay - DEFAULT_TIME_RANGE_DAYS
 
     numerator = dayRangeQuery model, {
       fromDay
@@ -87,7 +68,7 @@ class MetricService
           select: 'count(distinct(userId))'
           from: 'view'
           where: partialWhereFn (day) ->
-            "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+            "time >= #{util.dayToMS day}ms AND time < #{util.dayToMS day + 1}ms"
           , where
       }
     else

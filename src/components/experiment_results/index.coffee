@@ -15,6 +15,7 @@ if window?
 
 module.exports = class ExperimentResults
   constructor: ({model, experiment}) ->
+    metrics = model.metric.getAll()
     selectedIndex = new Rx.BehaviorSubject 0
     @$tabs = new Tabs({selectedIndex})
     @$deleteButton = new Button()
@@ -22,21 +23,24 @@ module.exports = class ExperimentResults
     @state = z.state
       model: model
       experiment: experiment
-      results: util.forkJoin model.metric.getAll(), experiment
+      results: util.forkJoin metrics, experiment
         .flatMapLatest ([metrics, experiment]) ->
-          util.forkJoin _.map metrics, (metric) ->
+          queries = util.forkJoin _.map metrics, (metric) ->
             util.forkJoin _.map experiment.choices, (choice) ->
-              # TODO: represent result as tree
               MetricService.query model, {
                 metric
                 where: "#{experiment.key}='#{choice}'"
               }
-            .map (series) ->
-              {
-                metric: metric
-                series: series
-              }
-          .map StatisticsService.resultGridAnalysis
+              .map (result) ->
+                {metric, choice, result}
+            .map (row) ->
+              controlResult = row[0].result
+              _.map row, (cell) ->
+                _.defaults {controlResult}, cell
+
+          queries
+          .map _.flatten
+          .map StatisticsService.resultAnalysis
 
 
   delete: (model, experiment) ->
@@ -46,10 +50,16 @@ module.exports = class ExperimentResults
   render: =>
     {model, experiment, results} = @state.getValue()
 
+    resultsByMetricName = _.groupBy results, ({cell}) ->
+      cell.metric.name
+
     tabs = ['overview', 'explore']
 
-    table = _.map results, ({metric, series}) ->
-      [metric.name].concat series
+    headers = ['Metric \\ Group'].concat(experiment?.choices)
+    table = _.map resultsByMetricName, (results, metricName) ->
+      [metricName].concat _.map _.rest(headers), (experimentChoice) ->
+        _.find results, ({cell}) ->
+          cell.choice is experimentChoice
 
     z '.z-experiment-results',
       z '.about',
@@ -74,24 +84,24 @@ module.exports = class ExperimentResults
         z 'table',
           [
             z 'tr',
-              _.map ['Metric \\ Group'].concat(experiment?.choices), (header) ->
+              _.map headers, (header) ->
                 z 'th',
                   header
           ].concat _.map table, (row) ->
             z 'tr',
-              _.map row, (cell) ->
-                if _.isString cell
+              _.map row, (element) ->
+                if _.isString element
                   z 'td.is-label',
-                    cell
-                else
-                  {aggregate, isConclusive, isSignificant,
-                    xBar, yBar, percentChange, interval} = cell
-                  interval = interval
+                    element
+                else if element?
+                  {conclusivity, cell, FDR, confidence} = element
+                  aggregate = cell.result.aggregate
+
                   z 'td',
                     className: z.classKebab {
-                      isConclusive
-                      isSignificant
-                      isBetter: yBar > xBar
+                      isConclusive: conclusivity.isConclusive
+                      isSignificant: FDR.isSignificant
+                      isBetter: conclusivity.yBar > conclusivity.xBar
                     }
                     z 'span',
                       if aggregate % 1 isnt 0
@@ -101,9 +111,9 @@ module.exports = class ExperimentResults
                     ' ('
                     z 'span.percent',
                       className: z.classKebab {
-                        isNegative: percentChange < 0
-                        isNeutral: percentChange is 0
+                        isNegative: confidence.percentChange < 0
+                        isNeutral: confidence.percentChange is 0
                       }
-                      "#{if percentChange > 0 then '+' else ''}" +
-                      "#{(percentChange * 100).toFixed(2)}%"
-                    " ±#{interval.toFixed(2)})"
+                      "#{if confidence.percentChange > 0 then '+' else ''}" +
+                      "#{(confidence.percentChange * 100).toFixed(2)}%"
+                    " ±#{confidence.interval.toFixed(2)})"

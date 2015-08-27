@@ -10,6 +10,15 @@ else
   bluebird = 'bluebird'
   require bluebird
 
+queryify = ({select, from, where, groupBy}) ->
+  q = "SELECT #{select} FROM #{from}"
+  if where?
+    q += " WHERE #{where}"
+  if groupBy?
+    q += " GROUP BY #{groupBy}"
+
+  return q
+
 module.exports = class Event
   constructor: ({@accessTokenStream, @proxy}) ->
     @queryQueue = []
@@ -59,7 +68,7 @@ module.exports = class Event
 
         _.flatten res.results[0].series[0].values
 
-  query: (q) =>
+  query: ({select, from, where, groupBy}) =>
     Rx.Observable.defer =>
       unless window?
         return Rx.Observable.just null
@@ -75,7 +84,7 @@ module.exports = class Event
         rejecter = reject
 
       @queryQueue.push {
-        q: q
+        q: queryify {select, from, where, groupBy}
         deferred:
           resolve: resolver
           reject: rejecter
