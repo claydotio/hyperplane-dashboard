@@ -9,24 +9,30 @@ json('zorium-paper/colors.json')
     display: none
 
   > .list
-    zp-font-subhead()
-    width: 200px
-    padding: 32px 0
+    padding: 16px
 
     > .fab
       display: flex
       justify-content: center
       padding: 20px
 
-    > .experiment
-      padding-left: 16px
+    > .apps-group
+      margin-bottom: 20px
 
-      &:hover
-        cursor: pointer
-        background: rgba(0, 0, 0, 0.03)
+      > .name
+        zp-font-title()
 
-      &.is-selected
-        background: rgba(0, 0, 0, 0.06)
+      > .experiments
+        > .experiment
+          zp-font-subhead()
+          padding-left: 16px
+
+          &:hover
+            cursor: pointer
+            background: rgba(0, 0, 0, 0.03)
+
+          &.is-selected
+            background: rgba(0, 0, 0, 0.06)
 
   > .results
     flex: 1

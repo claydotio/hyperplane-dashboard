@@ -13,7 +13,7 @@ if window?
 
 module.exports = class HomePage
   constructor: ({model}) ->
-    selectedIndex = new Rx.BehaviorSubject(0)
+    selectedIndex = new Rx.BehaviorSubject(1)
 
     @$head = new Head()
     @$menu = new Menu()

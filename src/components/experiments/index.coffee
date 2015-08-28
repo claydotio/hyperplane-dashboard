@@ -23,6 +23,7 @@ module.exports = class Experiments
     @$plus = new Icon()
 
     newExperimentForm = _.transform
+      apps: subject: new Rx.BehaviorSubject ''
       key:
         subject: new Rx.BehaviorSubject ''
       globalPercent:
@@ -67,6 +68,8 @@ module.exports = class Experiments
     body = _.transform form, (result, value, key) ->
       subjectValue = value.subject.getValue()
       result[key] = switch key
+        when 'apps'
+          _.map subjectValue.split(','), (choice) -> choice.trim()
         when 'globalPercent'
           parseInt subjectValue
         when 'choices'
@@ -83,6 +86,13 @@ module.exports = class Experiments
     {model, experiments, selectedId, newExperimentForm, isCreating} =
       @state.getValue()
     selectedId ?= @defaultId experiments
+    experimentsByApps = _.groupBy experiments, (experiment) ->
+      # LEGACY START
+      if _.isEmpty experiment.apps
+        '*'
+      # LEGACY END
+      else
+        experiment.apps.join(' | ')
 
     z '.z-experiments',
       className: z.classKebab {isCreating}
@@ -124,14 +134,19 @@ module.exports = class Experiments
             $icon: z @$plus, {icon: 'plus', isDark: true}
             onclick: =>
               @state.set isCreating: true
-        _.map experiments, (experiment) =>
-          z '.experiment',
-            className: z.classKebab {
-              isSelected: experiment.id is selectedId
-            }
-            onclick: =>
-              @select experiment.id
-            experiment.key
+        _.map experimentsByApps, (experiments, apps) =>
+          z '.apps-group',
+            z '.name',
+              apps
+            z '.experiments',
+              _.map experiments, (experiment) =>
+                z '.experiment',
+                  className: z.classKebab {
+                    isSelected: experiment.id is selectedId
+                  }
+                  onclick: =>
+                    @select experiment.id
+                  experiment.key
 
       if selectedId
         z '.results',
