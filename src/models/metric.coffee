@@ -50,9 +50,13 @@ module.exports = class Metric
         #   numerator:
         #     select: 'sum(value)'
         #     from: 'revenue'
+        #     where: (day) ->
+        #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
         #   denominator:
         #     select: 'count(distinct(userId))'
         #     from: 'revenue'
+        #     where: (day) ->
+        #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
         # }
         # {
         #   name: '3d LTV'

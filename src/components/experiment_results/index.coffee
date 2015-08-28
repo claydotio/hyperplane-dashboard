@@ -27,10 +27,15 @@ module.exports = class ExperimentResults
         .flatMapLatest ([metrics, experiment]) ->
           queries = util.forkJoin _.map metrics, (metric) ->
             util.forkJoin _.map experiment.choices, (choice) ->
-              MetricService.query model, {
-                metric
-                where: "#{experiment.key}='#{choice}'"
-              }
+              where = if _.isEmpty(experiment.apps) # LEGACY
+                "#{experiment.key}='#{choice}'"
+              else
+                experimentFilter = _.map(experiment.apps, (app) ->
+                  "#{app}_#{experiment.key}='#{choice}'"
+                ).join(' OR ')
+                "(#{experimentFilter})"
+
+              MetricService.query model, {metric, where}
               .map (result) ->
                 {metric, choice, result}
             .map (row) ->
