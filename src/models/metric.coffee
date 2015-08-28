@@ -36,6 +36,19 @@ module.exports = class Metric
               "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
               "joinDay = '#{day - 1}'"
         }
+        {
+          name: 'sessions / DAU'
+          numerator:
+            select: 'count(distinct(sessionId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+          denominator:
+            select: 'count(distinct(userId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+        }
         # {
         #   name: 'egp / view'
         #   numerator:
