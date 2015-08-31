@@ -10,16 +10,13 @@ json('zorium-paper/colors.json')
     padding: 16px
     border-bottom: 2px solid $black
 
-  > .graph
+  > .actions
     padding: 16px
-    background: red
     border-bottom: 2px solid $black
-
-  > .tabs
-    background: $pink500
 
   > .data
     padding: 16px
+    border-bottom: 2px solid $black
 
     > table
       width: 100%
@@ -27,7 +24,6 @@ json('zorium-paper/colors.json')
 
       > tr
         border-bottom: 2px solid $black12
-        padding: 16px
 
         > th
           color: $black54
@@ -39,7 +35,11 @@ json('zorium-paper/colors.json')
           background: $grey100
 
           &.is-label
+            padding: 0
             background: transparent
+
+            > .zp-radio-button
+              vertical-align: middle
 
           &.is-conclusive.is-significant
             background: $red100
@@ -53,3 +53,6 @@ json('zorium-paper/colors.json')
               color: $red500
             &.is-neutral
               color: $black
+
+  > .chart
+    padding: 16px
