@@ -49,6 +49,19 @@ module.exports = class Metric
             where: (day) ->
               "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
         }
+        {
+          name: 'shares / DAU'
+          numerator:
+            select: 'count(userId)'
+            from: 'share, botShare'
+            where: (day) ->
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+          denominator:
+            select: 'count(distinct(userId))'
+            from: 'view'
+            where: (day) ->
+              "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+        }
         # {
         #   name: 'egp / view'
         #   numerator:
