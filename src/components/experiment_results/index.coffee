@@ -29,7 +29,7 @@ module.exports = class ExperimentResults
               "\"#{experiment.key}\"='#{choice}'"
             else
               experimentFilter = _.map(experiment.apps, (app) ->
-                "\"#{app}_#{experiment.key}\"='#{choice}'"
+                "\"\\\"#{app}_#{experiment.key}\\\"\"='#{choice}'"
               ).join(' OR ')
               "(#{experimentFilter})"
 
