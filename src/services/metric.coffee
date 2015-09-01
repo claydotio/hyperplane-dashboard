@@ -5,9 +5,6 @@ util = require '../lib/util'
 
 DEFAULT_TIME_RANGE_DAYS = 7
 
-dateToDay = (date) ->
-  Math.floor(date / 1000 / 60 / 60 / 24)
-
 partialWhereFn = (whereFn, where) ->
   return (args...) ->
     result = whereFn args...
@@ -38,12 +35,12 @@ class MetricService
     isOnlyToday ?= false
 
 
-    toDay = dateToDay new Date()
+    toDay = util.dateToDay new Date()
     fromDay = toDay - DEFAULT_TIME_RANGE_DAYS
 
     # TODO: this is ugly
     if isOnlyToday
-      toDay = dateToDay(new Date()) + 1
+      toDay = util.dateToDay(new Date()) + 1
       fromDay = toDay - 1
 
     numerator = dayRangeQuery model, {
