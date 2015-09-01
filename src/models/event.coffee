@@ -59,7 +59,7 @@ module.exports = class Event
         proxyCache: true
         method: 'post'
         body:
-          q: "SHOW TAG VALUES FROM view WITH KEY = '#{tag}'"
+          q: "SHOW TAG VALUES FROM view WITH KEY = \"#{tag}\""
         headers:
           Authorization: "Token #{@accessTokenStream.getValue()}"
       .then (res) ->

@@ -26,10 +26,10 @@ module.exports = class ExperimentResults
         queries = util.forkJoin _.map metrics, (metric) ->
           util.forkJoin _.map experiment.choices, (choice) ->
             where = if _.isEmpty(experiment.apps) # LEGACY
-              "#{experiment.key}='#{choice}'"
+              "\"#{experiment.key}\"='#{choice}'"
             else
               experimentFilter = _.map(experiment.apps, (app) ->
-                "#{app}_#{experiment.key}='#{choice}'"
+                "\"#{app}_#{experiment.key}\"='#{choice}'"
               ).join(' OR ')
               "(#{experimentFilter})"
 
