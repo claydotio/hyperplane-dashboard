@@ -87,12 +87,7 @@ module.exports = class Experiments
       @state.getValue()
     selectedId ?= @defaultId experiments
     experimentsByApps = _.groupBy experiments, (experiment) ->
-      # LEGACY START
-      if _.isEmpty experiment.apps
-        '*'
-      # LEGACY END
-      else
-        experiment.apps.join(' | ')
+      experiment.apps.join(' | ')
 
     z '.z-experiments',
       className: z.classKebab {isCreating}
