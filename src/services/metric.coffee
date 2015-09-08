@@ -87,7 +87,7 @@ class MetricService
       values = if denominator
         _.zipWith numerator.values, denominator.values, (num, den) ->
           quotient = num / den
-          if _.isNaN(quotient)
+          if _.isNaN(quotient) or not _.isFinite(quotient)
             null
           else
             quotient
