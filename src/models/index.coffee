@@ -45,4 +45,4 @@ module.exports = class Model
     @user = new User({accessTokenStream, proxy})
     @event = new Event({accessTokenStream, proxy})
     @experiment = new Experiment({accessTokenStream, proxy})
-    @metric = new Metric({accessTokenStream})
+    @metric = new Metric({accessTokenStream, @event})
