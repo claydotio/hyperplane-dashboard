@@ -81,16 +81,21 @@ critz = (p) ->
 # See (2) in paper    #
 #######################
 getCellConclusivity = (cell) ->
-  {result, controlResult} = cell
+  {result, controlResult, metric} = cell
 
   # TODO: verify conversion rate makes sense and distributions make sense
-  xBar = controlResult.aggregate / (
-    controlResult.aggregateViews +
-    controlResult.aggregate +
-    result.aggregate
-  )
-  yBar = result.aggregate /
-    (result.aggregateViews + controlResult.aggregate + result.aggregate)
+  if metric.isPercent
+    xBar = controlResult.aggregate
+    yBar = result.aggregate
+  else
+    xBar = controlResult.aggregate / (
+      controlResult.aggregateViews +
+      controlResult.aggregate +
+      result.aggregate
+    )
+    yBar = result.aggregate /
+      (result.aggregateViews + controlResult.aggregate + result.aggregate)
+
   n = controlResult.aggregateViews + result.aggregateViews
 
   thetaHat = yBar - xBar

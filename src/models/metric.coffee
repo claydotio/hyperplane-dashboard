@@ -19,6 +19,7 @@ metrics = [
   }
   {
     name: 'D1 Retention'
+    isPercent: true
     numerator:
       select: 'count(distinct(userId))'
       from: 'view'
