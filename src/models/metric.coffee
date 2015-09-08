@@ -58,14 +58,14 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
-  # {
-  #   name: 'nps'
-  #   numerator:
-  #     select: 'average(value)'
-  #     from: 'nps'
-  #     where: (day) ->
-  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  # }
+  {
+    name: 'nps'
+    numerator:
+      select: 'mean(value)'
+      from: 'nps'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
   # {
   #   name: 'egp / view'
   #   numerator:
@@ -165,7 +165,7 @@ module.exports = class Metric
 
   getAll: =>
     @event.getMeasurements()
-    .map (measurments) ->
+    .map (measurements) ->
       _.filter metrics, (metric) ->
         froms = _.filter([
           metric.numerator.from, metric.denominator?.from
@@ -174,6 +174,6 @@ module.exports = class Metric
         .split(',')
 
         isMissingMeasurement = _.some froms, (from) ->
-          not _.includes measurments, from
+          not _.includes measurements, from
 
         return not isMissingMeasurement
