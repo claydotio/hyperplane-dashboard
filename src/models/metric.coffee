@@ -67,6 +67,22 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
+  {
+    name: 'un-bounce rate'
+    isPercent: true
+    numerator:
+      select: 'count(distinct(sessionId))'
+      from: 'session'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+        "sessionEvents = '2'"
+    denominator:
+      select: 'count(distinct(sessionId))'
+      from: 'session'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+        "sessionEvents = '1'"
+  }
   # {
   #   name: 'egp / view'
   #   numerator:
@@ -147,16 +163,6 @@ metrics = [
   #   denominator:
   #     select: 'count(distinct(sessionId))'
   #     from: 'pageview'
-  # }
-  # {
-  #   name: 'un-bounce rate'
-  #   numerator:
-  #     select: 'count(distinct(sessionId))'
-  #     from: 'session'
-  #     where: -> 'sessionEvents=\'1\''
-  #   denominator:
-  #     select: 'count(distinct(sessionId))'
-  #     from: 'session'
   # }
 ]
 
