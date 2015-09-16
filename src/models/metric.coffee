@@ -9,6 +9,14 @@ dayToMS = util.dayToMS
 
 metrics = [
   {
+    name: 'Revenue (USD)'
+    numerator:
+      select: 'sum(value) / 100'
+      from: 'revenue'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'DAU'
     isGroupSizeDependent: true
     numerator:
