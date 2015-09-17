@@ -32,14 +32,21 @@ dayRangeQuery = (model, {query, fromDay, toDay, shouldStream}) ->
     {dates, values}
 
 class MetricService
-  query: (model, {metric, where, hasViews, isOnlyToday, shouldStream}) ->
+  query: (model, {
+    metric
+    where
+    hasViews
+    isOnlyToday
+    shouldStream
+    numDays
+  }) ->
     hasViews ?= true
     isOnlyToday ?= false
     shouldStream ?= false
-
+    numDays ?= DEFAULT_TIME_RANGE_DAYS
 
     toDay = util.dateToDay new Date()
-    fromDay = toDay - DEFAULT_TIME_RANGE_DAYS
+    fromDay = toDay - numDays
 
     # TODO: this is ugly
     if isOnlyToday

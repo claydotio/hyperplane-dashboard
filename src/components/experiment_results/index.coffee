@@ -14,6 +14,8 @@ StatisticsService = require '../../services/statistics'
 if window?
   require './index.styl'
 
+DEFAULT_TIME_RANGE_DAYS = 14
+
 module.exports = class ExperimentResults
   constructor: ({model, experiment}) ->
     metrics = model.metric.getAll()
@@ -30,7 +32,11 @@ module.exports = class ExperimentResults
             ).join(' OR ')
             where = "(#{experimentFilter})"
 
-            MetricService.query model, {metric, where}
+            MetricService.query model, {
+              metric
+              where
+              numDays: DEFAULT_TIME_RANGE_DAYS
+            }
             .map (result) ->
               {metric, choice, result}
           .map (row) ->
