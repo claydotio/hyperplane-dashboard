@@ -9,7 +9,7 @@ if window?
 module.exports = class MetaInfo
   constructor: ({model}) ->
     tagValues = model.event.getTags().flatMapLatest (tags) ->
-      util.forkJoin _.map tags, (tag) ->
+      util.streamFilterJoin _.map tags, (tag) ->
         model.event.getTagValues tag
         .map (values) ->
           {tag, values: _.take(values, 10)}

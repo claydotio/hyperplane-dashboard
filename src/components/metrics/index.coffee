@@ -27,7 +27,12 @@ module.exports = class Metrics
           util.forkJoin _.map appNames, (appName) ->
             where = "app = '#{appName}'" +
               if currentFilter then ' AND ' + currentFilter else ''
-            MetricService.query model, {metric, where, hasViews: false}
+            MetricService.query model, {
+              metric
+              where
+              hasViews: false
+              shouldStream: true
+            }
             .map ({dates, values, aggregate} = {}) ->
               {dates, values, aggregate, appName}
           .map (results) ->

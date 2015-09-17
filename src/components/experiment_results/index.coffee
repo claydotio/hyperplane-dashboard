@@ -23,8 +23,8 @@ module.exports = class ExperimentResults
 
     resultsByMetricName = util.forkJoin metrics, experiment
       .flatMapLatest ([metrics, experiment]) ->
-        queries = util.forkJoin _.map metrics, (metric) ->
-          util.forkJoin _.map experiment.choices, (choice) ->
+        queries = util.streamFilterJoin _.map metrics, (metric) ->
+          util.streamFilterJoin _.map experiment.choices, (choice) ->
             experimentFilter = _.map(experiment.apps, (app) ->
               "\"#{app}_#{experiment.key}\"='#{choice}'"
             ).join(' OR ')
@@ -71,7 +71,7 @@ module.exports = class ExperimentResults
       .map ([metrics, selectedMetricIndex, resultsByMetricName]) ->
         metricName = metrics[selectedMetricIndex].name
         results = resultsByMetricName[metricName]
-        unless google?
+        unless google? and results?
           return null
         data = new google.visualization.DataTable()
 

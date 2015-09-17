@@ -20,8 +20,7 @@ queryify = ({select, from, where, groupBy}) ->
   return q
 
 module.exports = class Event
-  constructor: ({@accessTokenStream, @proxy}) ->
-    @queryQueue = []
+  constructor: ({@accessTokenStream, @proxy}) -> null
 
   getAppNames: =>
     Rx.Observable.defer =>
@@ -85,46 +84,15 @@ module.exports = class Event
 
   query: ({select, from, where, groupBy}) =>
     Rx.Observable.defer =>
-      unless window?
-        return Rx.Observable.just null
-      if _.isEmpty @queryQueue
-        setTimeout =>
-          @_batchQuery(@queryQueue)
-          @queryQueue = []
+      @proxy config.HYPERPLANE_API_URL + '/events',
+        proxyCache: true
+        method: 'post'
+        body:
+          q: queryify {select, from, where, groupBy}
+        headers:
+          Authorization: "Token #{@accessTokenStream.getValue()}"
+      .then (res) ->
+        unless res.results
+          throw new Error 'Something went wrong...'
 
-      resolver = null
-      rejecter = null
-      promise = new Promise (resolve, reject) ->
-        resolver = resolve
-        rejecter = reject
-
-      @queryQueue.push {
-        q: queryify {select, from, where, groupBy}
-        deferred:
-          resolve: resolver
-          reject: rejecter
-          promise: promise
-      }
-
-      return promise
-
-  _batchQuery: (queue) =>
-    q = _.pluck(queue, 'q').join '\n'
-
-    @proxy config.HYPERPLANE_API_URL + '/events',
-      proxyCache: true
-      method: 'post'
-      body:
-        q: q
-      headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
-    .then (res) ->
-      unless res.results
-        throw new Error 'Something went wrong...'
-
-      _.map queue, (queued, index) ->
-        queued.deferred.resolve res.results[index]
-
-    .catch (err) ->
-      _.map queue, (queued) ->
-        queued.deferred.reject err
+        res.results[0]

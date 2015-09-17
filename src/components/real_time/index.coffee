@@ -23,15 +23,16 @@ module.exports = class RealTime
 
     realTimeResults = util.forkJoin [metrics, appNames, @currentFilter]
       .flatMapLatest ([metrics, appNames, currentFilter]) ->
-        util.forkJoin _.map metrics, (metric) ->
-          util.forkJoin _.map appNames, (appName) ->
+        util.streamFilterJoin _.map metrics, (metric) ->
+          util.streamFilterJoin _.map appNames, (appName) ->
             where = "app = '#{appName}'" +
               if currentFilter then ' AND ' + currentFilter else ''
             MetricService.query model, {
               metric,
               where,
               hasViews: false,
-              isOnlyToday: true
+              isOnlyToday: true,
+              shouldStream: false
             }
             .map ({dates, values, aggregate} = {}) ->
               {dates, values, aggregate, appName}

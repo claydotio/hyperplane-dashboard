@@ -13,14 +13,16 @@ partialWhereFn = (whereFn, where) ->
 
     "#{result} AND #{where}"
 
-dayRangeQuery = (model, {query, fromDay, toDay}) ->
-  util.forkJoin _.map(_.range(fromDay, toDay), (day) ->
+dayRangeQuery = (model, {query, fromDay, toDay, shouldStream}) ->
+  days = _.range(toDay, fromDay, -1)
+  join = if shouldStream then util.streamJoin else util.forkJoin
+  join _.map(days, (day) ->
     model.event.query _.defaults {
       where: query.where(day)
     }, query
   )
   .map (partials) ->
-    dates = _.map _.range(fromDay, toDay), (day) ->
+    dates = _.map days, (day) ->
       new Date util.dayToMS day
     values = _.map partials, (partial) ->
       if _.isEmpty(partial) or partial.error?
@@ -30,9 +32,10 @@ dayRangeQuery = (model, {query, fromDay, toDay}) ->
     {dates, values}
 
 class MetricService
-  query: (model, {metric, where, hasViews, isOnlyToday}) ->
+  query: (model, {metric, where, hasViews, isOnlyToday, shouldStream}) ->
     hasViews ?= true
     isOnlyToday ?= false
+    shouldStream ?= false
 
 
     toDay = util.dateToDay new Date()
@@ -44,6 +47,7 @@ class MetricService
       fromDay = toDay - 1
 
     numerator = dayRangeQuery model, {
+      shouldStream
       fromDay
       toDay
       query:
@@ -54,6 +58,7 @@ class MetricService
 
     denominator = if metric.denominator
       dayRangeQuery model, {
+        shouldStream
         fromDay
         toDay
         query:
@@ -66,6 +71,7 @@ class MetricService
 
     views = if hasViews
       dayRangeQuery model, {
+        shouldStream
         fromDay
         toDay
         query:
