@@ -14,7 +14,7 @@ StatisticsService = require '../../services/statistics'
 if window?
   require './index.styl'
 
-DEFAULT_TIME_RANGE_DAYS = 14
+MIN_TIME_RANGE_DAYS = 7
 
 module.exports = class ExperimentResults
   constructor: ({model, experiment}) ->
@@ -32,11 +32,11 @@ module.exports = class ExperimentResults
             ).join(' OR ')
             where = "(#{experimentFilter})"
 
-            MetricService.query model, {
-              metric
-              where
-              numDays: DEFAULT_TIME_RANGE_DAYS
-            }
+            today = util.dateToDay(new Date())
+            createdDay = util.dateToDay(new Date(experiment.createdAt))
+            numDays = Math.max today - createdDay, MIN_TIME_RANGE_DAYS
+
+            MetricService.query model, {metric, where, numDays}
             .map (result) ->
               {metric, choice, result}
           .map (row) ->
