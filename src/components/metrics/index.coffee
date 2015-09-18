@@ -23,8 +23,8 @@ module.exports = class Metrics
 
     chartedMetrics = util.forkJoin [metrics, appNames, @currentFilter]
       .flatMapLatest ([metrics, appNames, currentFilter]) ->
-        util.forkJoin _.map metrics, (metric) ->
-          util.forkJoin _.map appNames, (appName) ->
+        util.streamFilterJoin _.map metrics, (metric) ->
+          util.streamFilterJoin _.map appNames, (appName) ->
             where = "app = '#{appName}'" +
               if currentFilter then ' AND ' + currentFilter else ''
             MetricService.query model, {

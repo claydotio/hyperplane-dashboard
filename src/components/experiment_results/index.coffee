@@ -56,6 +56,7 @@ module.exports = class ExperimentResults
       model: model
       metrics: metrics
       experiment: experiment
+      resultsByMetricName: resultsByMetricName
       radios: metrics.flatMapLatest (metrics) ->
         util.forkJoin _.map metrics, (metric, index) ->
           isChecked = new Rx.BehaviorSubject(false)
@@ -102,8 +103,6 @@ module.exports = class ExperimentResults
             height: 500
           }
         })
-
-      resultsByMetricName: resultsByMetricName
 
 
   delete: (model, experiment) ->

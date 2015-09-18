@@ -1,6 +1,7 @@
 _ = require 'lodash'
 Rx = require 'rx-lite'
 request = require 'clay-request'
+Netox = require 'netox'
 
 User = require './user'
 Event = require './event'
@@ -15,34 +16,10 @@ else
   bluebird = 'bluebird'
   require bluebird
 
-PROXY_CACHE_KEY = 'ZORIUM_PROXY_CACHE'
-
-isCacheable = (opts) ->
-  not opts.method or opts.method.toLowerCase() is 'get' or opts.proxyCache
-
 module.exports = class Model
   constructor: ({accessTokenStream}) ->
-    proxyCache = new Rx.BehaviorSubject(window?[PROXY_CACHE_KEY] or {})
-
-    proxy = (url, opts = {}) ->
-      cacheKey = JSON.stringify(opts) + '__z__' + url
-      cached = proxyCache.getValue()[cacheKey]
-
-      if not isCacheable(opts)
-        proxyCache.onNext {}
-      else if cached
-        return Promise.resolve cached
-
-      proxyOpts = opts
-
-      req = request url, proxyOpts
-      if isCacheable(opts)
-        entry = {}
-        entry[cacheKey] = req
-        proxyCache.onNext _.defaults entry, proxyCache.getValue()
-      return req
-
-    @user = new User({accessTokenStream, proxy})
-    @event = new Event({accessTokenStream, proxy})
-    @experiment = new Experiment({accessTokenStream, proxy})
+    @netox = new Netox()
+    @user = new User({accessTokenStream, proxy: request})
+    @event = new Event({accessTokenStream, @netox})
+    @experiment = new Experiment({accessTokenStream, proxy: request})
     @metric = new Metric({accessTokenStream, @event})
