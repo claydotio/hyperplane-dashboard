@@ -13,8 +13,7 @@ partialWhereFn = (whereFn, where) ->
 
     "#{result} AND #{where}"
 
-dayRangeQuery = (model, {query, fromDay, toDay, shouldStream}) ->
-  days = _.range(toDay, fromDay, -1)
+dayRangeQuery = (model, {query, days, shouldStream}) ->
   join = if shouldStream then util.streamJoin else util.forkJoin
   join _.map(days, (day) ->
     model.event.query _.defaults {
@@ -53,10 +52,12 @@ class MetricService
       toDay = util.dateToDay(new Date()) + 1
       fromDay = toDay - 1
 
+    # [fromDay, toDay)
+    days = _.range(toDay - 1, fromDay - 1, -1)
+
     numerator = dayRangeQuery model, {
       shouldStream
-      fromDay
-      toDay
+      days
       query:
         select: metric.numerator.select
         from: metric.numerator.from
@@ -66,8 +67,7 @@ class MetricService
     denominator = if metric.denominator
       dayRangeQuery model, {
         shouldStream
-        fromDay
-        toDay
+        days
         query:
           select: metric.denominator.select
           from: metric.denominator.from
@@ -79,8 +79,7 @@ class MetricService
     views = if hasViews
       dayRangeQuery model, {
         shouldStream
-        fromDay
-        toDay
+        days
         query:
           select: 'count(distinct(userId))'
           from: 'view'
