@@ -3,7 +3,7 @@ Rx = require 'rx-lite'
 
 util = require '../lib/util'
 
-DEFAULT_TIME_RANGE_DAYS = 7
+DEFAULT_TIME_RANGE_DAYS = 14
 
 partialWhereFn = (whereFn, where) ->
   return (args...) ->
