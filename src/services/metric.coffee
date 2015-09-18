@@ -96,7 +96,7 @@ class MetricService
         return null
 
       dates = numerator.dates
-      values = if denominator
+      values = if denominator?
         _.zipWith numerator.values, denominator.values, (num, den) ->
           quotient = num / den
           if _.isNaN(quotient) or not _.isFinite(quotient)
@@ -106,7 +106,17 @@ class MetricService
       else
         numerator.values
 
-      aggregate = _.sum(values) / values.length
+      weights = if denominator?
+        _.map denominator.values, (den) ->
+          den or 0
+      else
+        _.map numerator.values, -> 1
+
+      weightedValues = _.zipWith values, weights, (value, weight) ->
+        value * weight
+      weightedAverage = _.sum(weightedValues) / _.sum(weights)
+
+      aggregate = weightedAverage
       aggregateViews = if hasViews then _.sum(views.values) else null
       return {values, dates, aggregate, aggregateViews}
 
