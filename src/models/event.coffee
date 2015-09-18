@@ -10,6 +10,8 @@ else
   bluebird = 'bluebird'
   require bluebird
 
+BATCH_SIZE = 25 # should take 5s based on 200ms (worst case) per query
+
 queryify = ({select, from, where, groupBy}) ->
   q = "SELECT #{select} FROM #{from}"
   if where?
@@ -20,7 +22,9 @@ queryify = ({select, from, where, groupBy}) ->
   return q
 
 module.exports = class Event
-  constructor: ({@accessTokenStream, @netox}) -> null
+  constructor: ({@accessTokenStream, @netox}) ->
+    @queryQueue = []
+    @batchCache = {}
 
   getAppNames: =>
     @netox.stream config.HYPERPLANE_API_URL + '/events',
@@ -75,14 +79,44 @@ module.exports = class Event
       _.flatten res.results[0].series[0].values
 
   query: ({select, from, where, groupBy}) =>
-    @netox.stream config.HYPERPLANE_API_URL + '/events',
+    query = queryify {select, from, where, groupBy}
+
+    Rx.Observable.defer =>
+      unless window?
+        return Rx.Observable.just null
+
+      if _.isEmpty @queryQueue
+        setTimeout =>
+          @_batchQuery()
+
+      unless @batchCache[query]?
+        @batchCache[query] = new Rx.ReplaySubject(1)
+        @queryQueue.push query
+
+      return @batchCache[query].switch()
+
+  _batchQuery: =>
+    queue = _.take @queryQueue, BATCH_SIZE
+    if _.isEmpty queue
+      return
+    @queryQueue = _.slice @queryQueue, BATCH_SIZE
+    queries = queue.join '\n'
+
+    batchStream = @netox.stream config.HYPERPLANE_API_URL + '/events',
       method: 'post'
       body:
-        q: queryify {select, from, where, groupBy}
+        q: queries
       headers:
         Authorization: "Token #{@accessTokenStream.getValue()}"
-    .map (res) ->
-      unless res.results
-        throw new Error 'Something went wrong...'
 
-      res.results[0]
+    _.map queue, (query, index) =>
+      @batchCache[query].onNext batchStream.map (res) ->
+        unless res.results
+          throw new Error 'Something went wrong...'
+
+        res.results[index]
+
+    shouldFetchMore = not _.isEmpty @queryQueue
+    batchStream.take(1).toPromise().then =>
+      if shouldFetchMore
+        @_batchQuery()
