@@ -40,9 +40,10 @@ module.exports = class ExperimentResults
             .map (result) ->
               {metric, choice, result}
           .map (row) ->
-            controlResult = row[0].result
+            control = _.find row, {choice: 'control'}
+            control ?= row[0]
             _.map row, (cell) ->
-              _.defaults {controlResult}, cell
+              _.defaults {controlResult: control.result}, cell
 
         queries
         .map _.flatten
