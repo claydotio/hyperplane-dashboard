@@ -1,8 +1,8 @@
 _ = require 'lodash'
 log = require 'loglevel'
 
-ERROR_RATE = 0.05
-TAU = 0.5 # ???????? - free variable in significance
+ERROR_RATE = 0.10
+TAU = 0.01 # ???????? - free variable in significance
 FDR_THRESHOLD = 0.10
 Z_MAX = 6 # Maxium +/- z value
 
