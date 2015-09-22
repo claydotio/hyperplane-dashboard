@@ -3,6 +3,7 @@ Rx = require 'rx-lite'
 
 util = require '../lib/util'
 
+ONE_WEEK_DAYS = 7
 DEFAULT_TIME_RANGE_DAYS = 14
 
 partialWhereFn = (whereFn, where) ->
@@ -116,8 +117,17 @@ class MetricService
         value * weight
       weightedAverage = _.sum(weightedValues) / _.sum(weights)
 
+      weeklyValues = _.chunk(weightedValues, ONE_WEEK_DAYS)
+      weeklyWeights = _.chunk(weights, ONE_WEEK_DAYS)
+      weeklyChunks = _.zip(weeklyValues, weeklyWeights)
+
+      weeklyAggregates = _.map weeklyChunks, ([vals, weights]) ->
+        if _.sum(weights) is 0
+          return 0
+        _.sum(vals) / _.sum(weights)
+
       aggregate = weightedAverage
       aggregateViews = if hasViews then _.sum(views.values) else null
-      return {values, dates, aggregate, aggregateViews}
+      return {values, dates, aggregate, aggregateViews, weeklyAggregates}
 
 module.exports = new MetricService()

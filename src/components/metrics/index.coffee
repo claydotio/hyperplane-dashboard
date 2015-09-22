@@ -33,8 +33,8 @@ module.exports = class Metrics
               hasViews: false
               shouldStream: true
             }
-            .map ({dates, values, aggregate} = {}) ->
-              {dates, values, aggregate, appName}
+            .map ({dates, values, weeklyAggregates} = {}) ->
+              {dates, values, weeklyAggregates, appName}
           .map (results) ->
             unless google?
               return null
@@ -75,7 +75,8 @@ module.exports = class Metrics
     aggregateByApp = _.reduce chartedMetrics, (appResults, charted) ->
       _.map charted.results, (result) ->
         appResults[result.appName] ?= {}
-        appResults[result.appName][charted.metric.name] = result.aggregate
+        appResults[result.appName][charted.metric.name] =
+          result.weeklyAggregates
       return appResults
     , {}
 
@@ -106,11 +107,17 @@ module.exports = class Metrics
             z '.name',
               appName
             _.map aggregates, (aggregate, metric) ->
+              delta = aggregate[0] - aggregate[1]
+              deltaPercent = (delta / aggregate[1] * 100).toFixed(2)
               z 'tr.aggregate',
+                className: z.classKebab
+                  isIncrease: delta > 0
                 z 'td.name',
                   metric
                 z 'td.value',
-                  aggregate.toFixed(2)
+                  aggregate[0].toFixed(2)
+                z 'td.delta',
+                  "#{if deltaPercent > 0 then '+' else ''}#{deltaPercent}%"
       z '.graphs',
         _.map chartedMetrics, ({metric, $chart}) ->
           z '.metric',

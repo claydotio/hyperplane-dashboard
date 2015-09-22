@@ -17,16 +17,22 @@ json('zorium-paper/colors.json')
       flex: 1
       margin: 16px
       padding: 20px
-      background: $green500
-      color: $green500Text
+      border: 1px solid $black
 
       > .name
         zp-font-title()
-        color: $green500Text
 
       > .aggregate
         > .name
           padding: 2px 16px 2px 0
+
+        > .delta
+          padding-left: 8px
+          color: $red500
+
+        &.is-increase
+          > .delta
+            color: $green500
 
 
   > .graphs
