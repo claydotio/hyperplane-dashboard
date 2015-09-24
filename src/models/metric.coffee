@@ -17,6 +17,19 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: 'session length (min) / session'
+    numerator:
+      select: 'sum(value) / 1000 / 60'
+      from: 'session'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+    denominator:
+      select: 'count(distinct(sessionId))'
+      from: 'session'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'Retained DAU %'
     isPercent: true
     numerator:
