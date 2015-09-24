@@ -17,6 +17,21 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: 'Retained DAU %'
+    isPercent: true
+    numerator:
+      select: 'count(distinct(userId))'
+      from: 'view'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+        "joinDay <> '#{day}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'view'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'DAU'
     isGroupSizeDependent: true
     numerator:
