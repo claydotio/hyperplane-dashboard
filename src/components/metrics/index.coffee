@@ -52,13 +52,13 @@ module.exports = class Metrics
               results
               $chart: new Chart({
                 data: data
-                options: {
+                options:
                   tooltip: {isHtml: true}
-                  chart: {
+                  chart:
                     title: metric.name
-                  }
+                  vAxis:
+                    format: metric.format or '0.00'
                   height: 500
-                }
               })
             }
 

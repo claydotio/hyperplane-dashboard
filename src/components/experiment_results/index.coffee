@@ -95,13 +95,13 @@ module.exports = class ExperimentResults
 
         new Chart({
           data: data
-          options: {
+          options:
             tooltip: {isHtml: true}
-            chart: {
+            chart:
               title: metricName
-            }
+            vAxis:
+              format: metric.format or '0.00'
             height: 500
-          }
         })
 
 

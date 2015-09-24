@@ -14,7 +14,7 @@ class ChartWidget
     @disposable = @state.subscribe ({data, options}) ->
       # Wait for insertion into the DOM
       setTimeout ->
-        chart.draw(data, options)
+        chart.draw(data, google.charts.Line.convertOptions options)
 
     return $$el
 

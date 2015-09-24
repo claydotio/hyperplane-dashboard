@@ -10,6 +10,7 @@ dayToMS = util.dayToMS
 metrics = [
   {
     name: 'Revenue (USD)'
+    format: '$0.00'
     numerator:
       select: 'sum(value) / 100'
       from: 'revenue'
@@ -31,6 +32,7 @@ metrics = [
   }
   {
     name: 'Retained DAU %'
+    format: '0.00%'
     isPercent: true
     numerator:
       select: 'count(distinct(userId))'
@@ -46,6 +48,7 @@ metrics = [
   }
   {
     name: 'DAU'
+    format: '0'
     isGroupSizeDependent: true
     numerator:
       select: 'count(distinct(userId))'
@@ -55,6 +58,7 @@ metrics = [
   }
   {
     name: 'D1 Retention'
+    format: '0.00%'
     isPercent: true
     numerator:
       select: 'count(distinct(userId))'
@@ -105,6 +109,7 @@ metrics = [
   }
   {
     name: 'un-bounce rate'
+    format: '0.00%'
     isPercent: true
     numerator:
       select: 'count(distinct(sessionId))'
