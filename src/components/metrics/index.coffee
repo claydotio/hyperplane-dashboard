@@ -48,6 +48,8 @@ module.exports = class Metrics
             data.addRows _.zip dates, _.pluck(results, 'values')...
 
             {
+              formatter: new google.visualization.NumberFormat
+                pattern: metric.format
               metric
               results
               $chart: new Chart({
@@ -57,7 +59,7 @@ module.exports = class Metrics
                   chart:
                     title: metric.name
                   vAxis:
-                    format: metric.format or '0.00'
+                    format: metric.format
                   height: 500
               })
             }
@@ -72,12 +74,16 @@ module.exports = class Metrics
 
   render: =>
     {chartedMetrics} = @state.getValue()
-    aggregateByApp = _.reduce chartedMetrics, (appResults, charted) ->
+
+    metricsByApp = _.reduce chartedMetrics, (resultsByApp, charted) ->
       _.map charted.results, (result) ->
-        appResults[result.appName] ?= {}
-        appResults[result.appName][charted.metric.name] =
-          result.weeklyAggregates
-      return appResults
+        resultsByApp[result.appName] ?= {}
+        resultsByApp[result.appName][charted.metric.name] = {
+          currentWeek: result.weeklyAggregates[0]
+          lastWeek: result.weeklyAggregates[1]
+          formatter: charted.formatter
+        }
+      return resultsByApp
     , {}
 
     z '.z-metrics',
@@ -102,20 +108,20 @@ module.exports = class Metrics
             c600: paperColors.$blue600
             c700: paperColors.$blue700
       z '.overview',
-        _.map aggregateByApp, (aggregates, appName) ->
+        _.map metricsByApp, (metrics, appName) ->
           z '.app',
             z '.name',
               appName
-            _.map aggregates, (aggregate, metric) ->
-              delta = aggregate[0] - aggregate[1]
-              deltaPercent = (delta / aggregate[1] * 100).toFixed(2)
+            _.map metrics, ({currentWeek, lastWeek, formatter}, metric) ->
+              delta = currentWeek - lastWeek
+              deltaPercent = (delta / lastWeek * 100).toFixed(2)
               z 'tr.aggregate',
                 className: z.classKebab
                   isIncrease: delta > 0
                 z 'td.name',
                   metric
                 z 'td.value',
-                  aggregate[0].toFixed(2)
+                  formatter.formatValue currentWeek
                 z 'td.delta',
                   "#{if deltaPercent > 0 then '+' else ''}#{deltaPercent}%"
       z '.graphs',

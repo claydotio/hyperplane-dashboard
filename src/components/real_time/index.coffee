@@ -24,6 +24,11 @@ module.exports = class RealTime
     realTimeResults = util.forkJoin [metrics, appNames, @currentFilter]
       .flatMapLatest ([metrics, appNames, currentFilter]) ->
         util.streamFilterJoin _.map metrics, (metric) ->
+          unless google?
+            return Rx.Observable.just null
+          formatter = new google.visualization.NumberFormat
+            pattern: metric.format
+
           util.streamFilterJoin _.map appNames, (appName) ->
             where = "app = '#{appName}'" +
               if currentFilter then ' AND ' + currentFilter else ''
@@ -40,6 +45,7 @@ module.exports = class RealTime
             {
               metric
               results
+              formatter
             }
 
     @state = z.state
@@ -55,7 +61,10 @@ module.exports = class RealTime
     aggregateByApp = _.reduce realTimeResults, (appResults, realTime) ->
       _.map realTime.results, (result) ->
         appResults[result.appName] ?= {}
-        appResults[result.appName][realTime.metric.name] = result.aggregate
+        appResults[result.appName][realTime.metric.name] = {
+          aggregate: result.aggregate
+          formatter: realTime.formatter
+        }
       return appResults
     , {}
 
@@ -85,9 +94,9 @@ module.exports = class RealTime
           z '.app',
             z '.name',
               appName
-            _.map aggregates, (aggregate, metric) ->
+            _.map aggregates, ({aggregate, formatter}, metric) ->
               z 'tr.aggregate',
                 z 'td.name',
                   metric
                 z 'td.value',
-                  aggregate.toFixed(2)
+                  formatter.formatValue aggregate

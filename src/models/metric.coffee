@@ -19,6 +19,7 @@ metrics = [
   }
   {
     name: 'session length (min) / session'
+    format: '0.00'
     numerator:
       select: 'sum(value) / 1000 / 60'
       from: 'session'
@@ -75,6 +76,7 @@ metrics = [
   }
   {
     name: 'sessions / DAU'
+    format: '0.00'
     numerator:
       select: 'count(distinct(sessionId))'
       from: 'view'
@@ -88,6 +90,7 @@ metrics = [
   }
   {
     name: 'shares / DAU'
+    format: '0.00'
     numerator:
       select: 'count(userId)'
       from: 'share, botShare'
@@ -101,6 +104,7 @@ metrics = [
   }
   {
     name: 'nps'
+    format: '0.00'
     numerator:
       select: 'mean(value)'
       from: 'nps'

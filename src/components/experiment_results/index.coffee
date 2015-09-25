@@ -26,6 +26,9 @@ module.exports = class ExperimentResults
     resultsByMetricName = util.forkJoin metrics, experiment
       .flatMapLatest ([metrics, experiment]) ->
         queries = util.streamFilterJoin _.map metrics, (metric) ->
+          formatter = new google.visualization.NumberFormat
+            pattern: metric.format
+
           util.streamFilterJoin _.map experiment.choices, (choice) ->
             experimentFilter = _.map(experiment.apps, (app) ->
               "\"#{app}_#{experiment.key}\"='#{choice}'"
@@ -38,7 +41,7 @@ module.exports = class ExperimentResults
 
             MetricService.query model, {metric, where, numDays}
             .map (result) ->
-              {metric, choice, result}
+              {metric, choice, result, formatter}
           .map (row) ->
             control = _.find row, {choice: 'control'}
             control ?= row[0]
@@ -77,8 +80,8 @@ module.exports = class ExperimentResults
             }
       $chart: util.forkJoin [metrics, selectedMetricIndex, resultsByMetricName]
       .map ([metrics, selectedMetricIndex, resultsByMetricName]) ->
-        metricName = metrics[selectedMetricIndex].name
-        results = resultsByMetricName[metricName]
+        metric = metrics[selectedMetricIndex]
+        results = resultsByMetricName[metric.name]
         unless google? and results?
           return null
         data = new google.visualization.DataTable()
@@ -98,9 +101,9 @@ module.exports = class ExperimentResults
           options:
             tooltip: {isHtml: true}
             chart:
-              title: metricName
+              title: metric.name
             vAxis:
-              format: metric.format or '0.00'
+              format: metric.format
             height: 500
         })
 
@@ -164,10 +167,7 @@ module.exports = class ExperimentResults
                       isBetter: conclusivity.yBar > conclusivity.xBar
                     }
                     z 'span',
-                      if aggregate % 1 isnt 0
-                        aggregate.toFixed(2)
-                      else
-                        aggregate
+                      cell.formatter.formatValue aggregate
                     ' ('
                     z 'span.percent',
                       className: z.classKebab {
