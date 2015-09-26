@@ -36,8 +36,15 @@ json('zorium-paper/colors.json')
 
 
   > .graphs
+    display: flex
+    flex-wrap: wrap
+
     > .metric
+      flex: 1
+      display: inline-block
+      min-width: 500px
+      min-height: 250px
       box-sizing: border-box
       border: 2px solid $black26
-      padding: 16px
-      margin: 16px
+      padding: 8px
+      margin: 8px

@@ -9,14 +9,17 @@ class ChartWidget
   type: 'Widget'
   init: =>
     $$el = document.createElement 'div'
-    chart = new google.charts.Line $$el
+    @chart = new google.charts.Line $$el
 
-    @disposable = @state.subscribe ({data, options}) ->
-      # Wait for insertion into the DOM
-      setTimeout ->
-        chart.draw(data, google.charts.Line.convertOptions options)
+    @disposable = @state.subscribe ({@data, @options}) =>
+      @redraw()
 
     return $$el
+
+  redraw: =>
+    # Wait for insertion into the DOM
+    setTimeout =>
+      @chart.draw(@data, google.charts.Line.convertOptions @options)
 
   update: (previous, $$el) -> $$el
   destroy: => @disposable?.dispose()
@@ -30,5 +33,7 @@ module.exports = class Chart
     @widget = new ChartWidget({@state})
 
   render: =>
+    # doesn't scale dynamically in fluid layout so must redraw every time
+    @widget.redraw()
     z '.z-chart',
       @widget

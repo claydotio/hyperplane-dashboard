@@ -58,9 +58,11 @@ module.exports = class Metrics
                   tooltip: {isHtml: true}
                   chart:
                     title: metric.name
+                  legend:
+                    position: 'none'
                   vAxis:
                     format: metric.format
-                  height: 500
+                  height: 250
               })
             }
 
@@ -127,4 +129,4 @@ module.exports = class Metrics
       z '.graphs',
         _.map chartedMetrics, ({metric, $chart}) ->
           z '.metric',
-            $chart
+            $chart.render() # doesn't scale with fluid layout so re-draw
