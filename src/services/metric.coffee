@@ -27,7 +27,7 @@ dayRangeQuery = (model, {query, days, shouldStream}) ->
     values = _.map partials, (partial) ->
       if _.isEmpty(partial) or partial.error?
         return null
-      partial.series?[0].values[0][1]
+      partial.series?[0].values[0][1] or 0
 
     {dates, values}
 
