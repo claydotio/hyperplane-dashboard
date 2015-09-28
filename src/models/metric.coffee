@@ -112,6 +112,15 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: 'request time 95% (ms)'
+    format: '0.00'
+    numerator:
+      select: 'percentile(value, 95)'
+      from: 'timing'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'un-bounce rate'
     format: '0.00%'
     isPercent: true
