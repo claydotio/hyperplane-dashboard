@@ -65,6 +65,18 @@ class MetricService
         where: partialWhereFn metric.numerator.where, where
     }
 
+    conversionCount = if not metric.denominator
+      dayRangeQuery model, {
+        shouldStream
+        days
+        query:
+          select: 'count(userId)'
+          from: metric.numerator.from
+          where: partialWhereFn metric.numerator.where, where
+      }
+    else
+      Rx.Observable.just null
+
     denominator = if metric.denominator
       dayRangeQuery model, {
         shouldStream
@@ -91,8 +103,8 @@ class MetricService
     else
       Rx.Observable.just null
 
-    util.forkJoin numerator, denominator, views
-    .map ([numerator, denominator, views]) ->
+    util.forkJoin numerator, denominator, views, conversionCount
+    .map ([numerator, denominator, views, conversionCount]) ->
       unless numerator
         return null
 
@@ -111,7 +123,8 @@ class MetricService
         _.map denominator.values, (den) ->
           den or 0
       else
-        _.map numerator.values, -> 1
+        _.map conversionCount.values, (conversions) ->
+          conversions or 0
 
       weightedValues = _.zipWith values, weights, (value, weight) ->
         value * weight
