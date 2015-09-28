@@ -113,7 +113,7 @@ metrics = [
   }
   {
     name: 'request time 95% (ms)'
-    format: '0.00'
+    format: '0'
     numerator:
       select: 'percentile(value, 95)'
       from: 'timing'
