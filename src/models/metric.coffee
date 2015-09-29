@@ -75,6 +75,23 @@ metrics = [
         "joinDay = '#{day - 1}'"
   }
   {
+    name: 'D7 Retention'
+    format: '0.00%'
+    isPercent: true
+    numerator:
+      select: 'count(distinct(userId))'
+      from: 'view'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+        "joinDay = '#{day - 7}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'view'
+      where: (day) ->
+        "time >= #{dayToMS day - 7}ms AND time < #{dayToMS day - 6}ms AND " +
+        "joinDay = '#{day - 7}'"
+  }
+  {
     name: 'sessions / DAU'
     format: '0.00'
     numerator:
