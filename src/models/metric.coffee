@@ -129,6 +129,24 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: 'open pack'
+    format: '0'
+    numerator:
+      select: 'count(userId)'
+      from: 'openPack'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: 'claim reward'
+    format: '0'
+    numerator:
+      select: 'count(userId)'
+      from: 'claimReward'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'request time 95% (ms)'
     format: '0'
     numerator:
