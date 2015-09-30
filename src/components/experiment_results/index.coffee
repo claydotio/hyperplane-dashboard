@@ -104,6 +104,8 @@ module.exports = class ExperimentResults
             tooltip: {isHtml: true}
             chart:
               title: metric.name
+            legend:
+              position: 'none'
             vAxis:
               format: metric.format
             height: 500

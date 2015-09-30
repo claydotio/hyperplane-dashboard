@@ -10,14 +10,19 @@ json('zorium-paper/colors.json')
     > .zp-input
       flex: 1
 
+  > .user-filter-text
+    margin: 16px
+
   > .overview
     display: flex
+    flex-wrap: wrap
 
     > .app
       flex: 1
       margin: 16px
-      padding: 20px
+      padding: 16px
       border: 1px solid $black
+      min-width: 250px
 
       > .name
         zp-font-title()
@@ -42,9 +47,9 @@ json('zorium-paper/colors.json')
     > .metric
       flex: 1
       display: inline-block
-      min-width: 500px
+      min-width: 250px
       min-height: 250px
       box-sizing: border-box
-      border: 2px solid $black26
+      border: 1px solid $black
       padding: 8px
-      margin: 8px
+      margin: 16px

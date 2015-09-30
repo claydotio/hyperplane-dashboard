@@ -74,8 +74,7 @@ module.exports = class RealTime
           e.preventDefault()
           @filter()
         z @$userFilter,
-          hintText: 'custom filter,
-          e.g. uaBrowserName=\'Chrome\' AND uaOSName=\'Android\''
+          hintText: 'filter'
           isFloating: true
           colors:
             c500: paperColors.$blue500

@@ -94,8 +94,7 @@ module.exports = class Metrics
           e.preventDefault()
           @filter()
         z @$userFilter,
-          hintText: 'custom filter,
-          e.g. uaBrowserName=\'Chrome\' AND uaOSName=\'Android\''
+          hintText: 'filter'
           isFloating: true
           colors:
             c500: paperColors.$blue500
@@ -109,6 +108,8 @@ module.exports = class Metrics
             c500: paperColors.$blue500
             c600: paperColors.$blue600
             c700: paperColors.$blue700
+      z '.user-filter-text',
+        'custom filter, e.g. uaBrowserName=\'Chrome\' AND uaOSName=\'Android\''
       z '.overview',
         _.map metricsByApp, (metrics, appName) ->
           z '.app',
