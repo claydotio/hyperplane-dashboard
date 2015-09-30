@@ -150,6 +150,16 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: 'kitten ad click'
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'kittenAdClick'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'request time 95% (ms)'
     format: '0'
     numerator:
