@@ -11,6 +11,7 @@ metrics = [
   {
     name: 'Revenue (USD)'
     format: '$0.00'
+    isGroupSizeDependent: true
     numerator:
       select: 'sum(value) / 100'
       from: 'revenue'
@@ -131,6 +132,7 @@ metrics = [
   {
     name: 'open pack'
     format: '0'
+    isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
       from: 'openPack'
@@ -140,6 +142,7 @@ metrics = [
   {
     name: 'claim reward'
     format: '0'
+    isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
       from: 'claimReward'

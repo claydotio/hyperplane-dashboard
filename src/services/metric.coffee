@@ -139,7 +139,10 @@ class MetricService
           return 0
         _.sum(vals) / _.sum(weights)
 
-      aggregate = weightedAverage
+      aggregate = if metric.isGroupSizeDependent
+        _.sum(values) / values.length
+      else
+        weightedAverage
       aggregateViews = if hasViews then _.sum(views.values) else null
       return {values, dates, aggregate, aggregateViews, weeklyAggregates}
 

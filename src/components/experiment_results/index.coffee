@@ -26,6 +26,8 @@ module.exports = class ExperimentResults
     resultsByMetricName = util.forkJoin metrics, experiment
       .flatMapLatest ([metrics, experiment]) ->
         queries = util.streamFilterJoin _.map metrics, (metric) ->
+          unless google?
+            return Rx.Observable.just []
           formatter = new google.visualization.NumberFormat
             pattern: metric.format
 
