@@ -102,12 +102,15 @@ module.exports = class Event
     @queryQueue = _.slice @queryQueue, BATCH_SIZE
     queries = queue.join '\n'
 
+    accessToken = @accessTokenStream.getValue()
     batchStream = @netox.stream config.HYPERPLANE_API_URL + '/events',
       method: 'post'
       body:
         q: queries
+      qs: if accessToken? then {accessToken} else {}
       headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+        # Avoid CORS preflight
+        'Content-Type': 'text/plain'
 
     _.map queue, (query, index) =>
       @batchCache[query].onNext batchStream.map (res) ->
