@@ -11,6 +11,7 @@ else
   require bluebird
 
 BATCH_SIZE = 25 # should take 5s based on 200ms (worst case) per query
+BATCH_CONCURRENCY = 3
 
 queryify = ({select, from, where, groupBy}) ->
   q = "SELECT #{select} FROM #{from}"
@@ -87,7 +88,8 @@ module.exports = class Event
 
       if _.isEmpty @queryQueue
         setTimeout =>
-          @_batchQuery()
+          _.map _.range(BATCH_CONCURRENCY), =>
+            @_batchQuery()
 
       unless @batchCache[query]?
         @batchCache[query] = new Rx.ReplaySubject(1)
