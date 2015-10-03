@@ -9,7 +9,7 @@ class ChartWidget
   type: 'Widget'
   init: =>
     $$el = document.createElement 'div'
-    @chart = new google.charts.Line $$el
+    @chart = new google.visualization.LineChart $$el
 
     @disposable = @state.subscribe ({@data, @options}) =>
       @redraw()
@@ -19,7 +19,7 @@ class ChartWidget
   redraw: =>
     # Wait for insertion into the DOM
     setTimeout =>
-      @chart.draw(@data, google.charts.Line.convertOptions @options)
+      @chart.draw(@data, @options)
 
   update: (previous, $$el) -> $$el
   destroy: => @disposable?.dispose()

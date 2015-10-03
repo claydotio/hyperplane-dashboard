@@ -47,21 +47,31 @@ module.exports = class Metrics
             dates = results[0].dates
             data.addRows _.zip dates, _.pluck(results, 'values')...
 
+            dateFormatter = new google.visualization.DateFormat
+              formatType: 'short'
+
+            dateFormatter.format data, 0
+
+            numberFormatter = new google.visualization.NumberFormat
+              pattern: metric.format
+
+            _.map _.range(results.length), (column) ->
+              numberFormatter.format data, column + 1
+
             {
-              formatter: new google.visualization.NumberFormat
-                pattern: metric.format
+              formatter: numberFormatter
               metric
               results
               $chart: new Chart({
                 data: data
                 options:
-                  tooltip: {isHtml: true}
-                  chart:
-                    title: metric.name
+                  title: metric.name
                   legend:
-                    position: 'none'
+                    position: 'top'
                   vAxis:
                     format: metric.format
+                  hAxis:
+                    format: 'M/d'
                   height: 250
               })
             }
