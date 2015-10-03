@@ -17,9 +17,9 @@ CookieService = require './services/cookie'
 # LOGGING #
 ###########
 
-if config.ENV isnt config.ENVS.PROD
-  log.enableAll()
-else
+# if config.ENV isnt config.ENVS.PROD
+log.enableAll()
+# else
   # TODO: Configure ErrorReportService before usage
   # originalFactory = log.methodFactory
   # log.methodFactory = (methodName, logLevel) ->
@@ -27,7 +27,7 @@ else
   #   (args...) ->
   #     ErrorReportService.report args...
   #     return rawMethod args...
-  log.setLevel 'warn' # Note: required to apply plugin
+  # log.setLevel 'warn' # Note: required to apply plugin
 
 # Note: window.onerror != window.addEventListener('error')
 oldOnError = window.onerror
