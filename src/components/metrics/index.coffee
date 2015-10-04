@@ -67,7 +67,7 @@ module.exports = class Metrics
                 options:
                   title: metric.name
                   legend:
-                    position: 'top'
+                    position: 'none'
                   vAxis:
                     format: metric.format
                   hAxis:
