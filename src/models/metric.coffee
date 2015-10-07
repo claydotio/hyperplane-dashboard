@@ -10,6 +10,7 @@ dayToMS = util.dayToMS
 metrics = [
   {
     name: 'Revenue (USD)'
+    apps: ['kitten-cards']
     format: '$0.00'
     isGroupSizeDependent: true
     numerator:
@@ -108,6 +109,7 @@ metrics = [
   # }
   {
     name: 'shares / DAU'
+    apps: ['kitten-cards']
     format: '0.00'
     numerator:
       select: 'count(userId)'
@@ -131,6 +133,7 @@ metrics = [
   # }
   {
     name: 'open pack'
+    apps: ['kitten-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -141,6 +144,7 @@ metrics = [
   }
   {
     name: 'claim reward'
+    apps: ['kitten-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -161,6 +165,7 @@ metrics = [
   # }
   {
     name: 'kitten ad click'
+    apps: ['mobile']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -171,6 +176,7 @@ metrics = [
   }
   {
     name: 'request time 95% (ms)'
+    apps: ['kitten-cards']
     format: '0'
     numerator:
       select: 'percentile(value, 95)'
@@ -180,6 +186,7 @@ metrics = [
   }
   {
     name: 'un-bounce rate'
+    apps: ['kitten-cards']
     format: '0.00%'
     isPercent: true
     numerator:

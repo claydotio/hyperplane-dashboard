@@ -18,7 +18,14 @@ MIN_TIME_RANGE_DAYS = 14
 
 module.exports = class ExperimentResults
   constructor: ({model, experiment}) ->
-    metrics = model.metric.getAll()
+    metrics = experiment.flatMapLatest (experiment) ->
+      model.metric.getAll()
+      .map (metrics) ->
+        _.filter metrics, (metric) ->
+          if metric.apps?
+            not _.isEmpty _.intersection metric.apps, experiment.apps
+          else
+            true
     @$deleteButton = new Button()
 
     selectedMetricIndex = new Rx.BehaviorSubject(0)

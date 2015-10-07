@@ -29,7 +29,11 @@ module.exports = class RealTime
           formatter = new google.visualization.NumberFormat
             pattern: metric.format
 
-          util.streamFilterJoin _.map appNames, (appName) ->
+          targetAppNames = if metric.apps?
+            _.intersection appNames, metric.apps
+          else
+            appNames
+          util.streamFilterJoin _.map targetAppNames, (appName) ->
             where = "app = '#{appName}'" +
               if currentFilter then ' AND ' + currentFilter else ''
             MetricService.query model, {
