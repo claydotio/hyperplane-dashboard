@@ -54,7 +54,7 @@ class MetricService
       fromDay = toDay - 1
 
     # [fromDay, toDay)
-    days = _.range(toDay - 1, fromDay - 1, -1)
+    days = _.range(fromDay, toDay)
 
     numerator = dayRangeQuery model, {
       shouldStream
