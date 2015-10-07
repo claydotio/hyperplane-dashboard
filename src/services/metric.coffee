@@ -65,7 +65,8 @@ class MetricService
         where: partialWhereFn metric.numerator.where, where
     }
 
-    conversionCount = if not metric.denominator
+    conversionCount = if not metric.denominator and
+        not metric.isGroupSizeDependent
       dayRangeQuery model, {
         shouldStream
         days
@@ -122,6 +123,8 @@ class MetricService
       weights = if denominator?
         _.map denominator.values, (den) ->
           den or 0
+      else if metric.isGroupSizeDependent
+        _.map numerator.values, -> 1
       else
         _.map conversionCount.values, (conversions) ->
           conversions or 0
