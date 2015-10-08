@@ -176,7 +176,7 @@ module.exports = class ExperimentResults
                     radio.metricName is element
 
                   z 'td.is-label',
-                    radio.$el
+                    radio?.$el
                     element
                 else if element?
                   {conclusivity, cell, FDR, confidence} = element
