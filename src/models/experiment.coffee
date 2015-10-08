@@ -7,20 +7,22 @@ module.exports = class Experiment
 
   getAll: (q) =>
     Rx.Observable.defer =>
+      accessToken = @accessTokenStream.getValue()
       @proxy config.HYPERPLANE_API_URL + '/experiments',
         method: 'get'
-        headers:
-          Authorization: "Token #{@accessTokenStream.getValue()}"
+        qs: if accessToken? then {accessToken} else {}
 
   create: (body) =>
+    accessToken = @accessTokenStream.getValue()
     @proxy config.HYPERPLANE_API_URL + '/experiments',
       method: 'post'
       body: body
+      qs: if accessToken? then {accessToken} else {}
       headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+        'Content-Type': 'text/plain' # Avoid CORS preflight
 
   deleteById: (id) =>
+    accessToken = @accessTokenStream.getValue()
     @proxy config.HYPERPLANE_API_URL + "/experiments/#{id}",
       method: 'delete'
-      headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+      qs: if accessToken? then {accessToken} else {}

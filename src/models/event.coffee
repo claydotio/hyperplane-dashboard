@@ -28,12 +28,14 @@ module.exports = class Event
     @batchCache = {}
 
   getAppNames: =>
+    accessToken = @accessTokenStream.getValue()
     @netox.stream config.HYPERPLANE_API_URL + '/events',
       method: 'post'
       body:
         q: 'SHOW TAG VALUES FROM view WITH KEY = app'
+      qs: if accessToken? then {accessToken} else {}
       headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+        'Content-Type': 'text/plain' # Avoid CORS preflight
     .map (res) ->
       unless res.results
         throw new Error 'Something went wrong...'
@@ -41,12 +43,14 @@ module.exports = class Event
       _.flatten res.results[0].series?[0].values
 
   getTags: =>
+    accessToken = @accessTokenStream.getValue()
     @netox.stream config.HYPERPLANE_API_URL + '/events',
       method: 'post'
       body:
         q: 'SHOW TAG KEYS FROM view'
+      qs: if accessToken? then {accessToken} else {}
       headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+        'Content-Type': 'text/plain' # Avoid CORS preflight
     .map (res) ->
       unless res.results
         throw new Error 'Something went wrong...'
@@ -54,12 +58,14 @@ module.exports = class Event
       _.flatten res.results[0].series?[0].values
 
   getMeasurements: =>
+    accessToken = @accessTokenStream.getValue()
     @netox.stream config.HYPERPLANE_API_URL + '/events',
       method: 'post'
       body:
         q: 'SHOW MEASUREMENTS'
+      qs: if accessToken? then {accessToken} else {}
       headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+        'Content-Type': 'text/plain' # Avoid CORS preflight
     .map (res) ->
       unless res.results
         throw new Error 'Something went wrong...'
@@ -67,12 +73,14 @@ module.exports = class Event
       _.flatten res.results[0].series?[0].values
 
   getTagValues: (tag) =>
+    accessToken = @accessTokenStream.getValue()
     @netox.stream config.HYPERPLANE_API_URL + '/events',
       method: 'post'
       body:
         q: "SHOW TAG VALUES FROM view WITH KEY = \"#{tag}\""
+      qs: if accessToken? then {accessToken} else {}
       headers:
-        Authorization: "Token #{@accessTokenStream.getValue()}"
+        'Content-Type': 'text/plain' # Avoid CORS preflight
     .map (res) ->
       unless res.results
         throw new Error 'Something went wrong...'
@@ -109,8 +117,7 @@ module.exports = class Event
         queries: queue
       qs: if accessToken? then {accessToken} else {}
       headers:
-        # Avoid CORS preflight
-        'Content-Type': 'text/plain'
+        'Content-Type': 'text/plain' # Avoid CORS preflight
       isIdempotent: true
     .then (res) =>
       pending = _.filter res.results, 'isPending'
