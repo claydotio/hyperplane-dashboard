@@ -180,7 +180,7 @@ metrics = [
     format: '0'
     numerator:
       select: 'percentile(value, 95)'
-      from: 'timing'
+      from: 'requestTime'
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
