@@ -14,7 +14,7 @@ StatisticsService = require '../../services/statistics'
 if window?
   require './index.styl'
 
-MIN_TIME_RANGE_DAYS = 14
+MIN_TIME_RANGE_DAYS = 1
 
 module.exports = class ExperimentResults
   constructor: ({model, experiment}) ->
