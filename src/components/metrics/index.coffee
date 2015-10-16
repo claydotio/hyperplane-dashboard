@@ -95,8 +95,8 @@ module.exports = class Metrics
       _.map charted.results, (result) ->
         resultsByApp[result.appName] ?= {}
         resultsByApp[result.appName][charted.metric.name] = {
-          currentWeek: result.weeklyAggregates[0]
-          lastWeek: result.weeklyAggregates[1]
+          currentWeek: result.weeklyAggregates[1]
+          lastWeek: result.weeklyAggregates[0]
           formatter: charted.formatter
         }
       return resultsByApp
