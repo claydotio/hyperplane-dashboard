@@ -36,6 +36,23 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: '7d LTV (USD)'
+    apps: ['kitten-cards']
+    format: '$0.000'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'sum(value) / 100'
+      from: 'revenue'
+      where: (day) ->
+        "time >= #{dayToMS day - 6}ms AND time < #{dayToMS day + 1}ms AND " +
+        "joinDay = '#{day - 6}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'join'
+      where: (day) ->
+        "time >= #{dayToMS day - 6}ms AND time < #{dayToMS day - 5}ms"
+  }
+  {
     name: 'session length (min) / session'
     format: '0.00'
     numerator:
