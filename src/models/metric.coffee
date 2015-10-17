@@ -186,6 +186,28 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
+  {
+    name: 'create trade'
+    apps: ['kitten-cards']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'createTrade'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: 'complete trade'
+    apps: ['kitten-cards']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'completeTrade'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
   # {
   #   name: 'interstitial impression'
   #   format: '0'
