@@ -153,6 +153,6 @@ gulp.task 'dist:scripts', ['dist:clean'], ->
     if err
       console.trace err
       return
-    statsJson = JSON.stringify stats.toJson()
+    statsJson = JSON.stringify {hash: stats.toJson().hash}
     fs.writeFileSync "#{__dirname}/#{cfg.paths.dist}/stats.json", statsJson
   .pipe gulp.dest cfg.paths.dist
