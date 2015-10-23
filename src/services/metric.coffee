@@ -147,6 +147,15 @@ class MetricService
       else
         weightedAverage
       aggregateViews = if hasViews then _.sum(views.values) else null
-      return {values, dates, aggregate, aggregateViews, weeklyAggregates}
+      averageViews =  if hasViews then aggregateViews / views.values.length \
+        else null
+      return {
+        values
+        dates
+        aggregate
+        aggregateViews
+        weeklyAggregates
+        averageViews
+      }
 
 module.exports = new MetricService()

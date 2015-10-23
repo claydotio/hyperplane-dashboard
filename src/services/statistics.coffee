@@ -88,13 +88,14 @@ getCellConclusivity = (cell) ->
     xBar = controlResult.aggregate
     yBar = result.aggregate
   else
-    xBar = controlResult.aggregate / (
-      controlResult.aggregateViews +
-      controlResult.aggregate +
-      result.aggregate
-    )
-    yBar = result.aggregate /
-      (result.aggregateViews + controlResult.aggregate + result.aggregate)
+    xBar = controlResult.aggregate / controlResult.averageViews
+    yBar = result.aggregate / result.averageViews
+
+    # Value must be between 0 and 1
+    while xBar > 1 or yBar > 1
+      xBar /= controlResult.averageViews
+      yBar /= result.averageViews
+
 
   n = controlResult.aggregateViews + result.aggregateViews
 
