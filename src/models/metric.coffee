@@ -9,6 +9,16 @@ dayToMS = util.dayToMS
 
 metrics = [
   {
+    name: 'Views'
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'view'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
     name: 'Revenue (USD)'
     apps: ['kitten-cards']
     format: '$0.00'
