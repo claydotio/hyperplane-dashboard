@@ -85,6 +85,7 @@ metrics = [
   {
     name: 'DAU'
     format: '0'
+    isExperimentHidden: true
     isGroupSizeDependent: true
     numerator:
       select: 'count(distinct(userId))'
@@ -190,6 +191,7 @@ metrics = [
     name: 'create trade'
     apps: ['kitten-cards']
     format: '0'
+    isExperimentHidden: true
     isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
@@ -233,6 +235,7 @@ metrics = [
     name: 'request time 95% (ms)'
     apps: ['kitten-cards']
     format: '0'
+    isExperimentHidden: true
     numerator:
       select: 'percentile(value, 95)'
       from: 'requestTime'
@@ -243,6 +246,7 @@ metrics = [
     name: 'un-bounce rate'
     apps: ['kitten-cards']
     format: '0.00%'
+    isExperimentHidden: true
     isPercent: true
     numerator:
       select: 'count(distinct(sessionId))'

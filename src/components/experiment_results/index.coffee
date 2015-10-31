@@ -22,6 +22,9 @@ module.exports = class ExperimentResults
       model.metric.getAll()
       .map (metrics) ->
         _.filter metrics, (metric) ->
+          if metric.isExperimentHidden
+            return false
+
           if metric.apps?
             not _.isEmpty _.intersection metric.apps, experiment.apps
           else
