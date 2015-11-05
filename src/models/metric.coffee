@@ -127,20 +127,6 @@ metrics = [
         "time >= #{dayToMS day - 7}ms AND time < #{dayToMS day - 6}ms AND " +
         "joinDay = '#{day - 7}'"
   }
-  # {
-  #   name: 'sessions / DAU'
-  #   format: '0.00'
-  #   numerator:
-  #     select: 'count(distinct(sessionId))'
-  #     from: 'view'
-  #     where: (day) ->
-  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  #   denominator:
-  #     select: 'count(distinct(userId))'
-  #     from: 'view'
-  #     where: (day) ->
-  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  # }
   {
     name: 'shares / DAU'
     apps: ['kitten-cards']
@@ -156,15 +142,6 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
-  # {
-  #   name: 'nps'
-  #   format: '0.00'
-  #   numerator:
-  #     select: 'mean(value)'
-  #     from: 'nps'
-  #     where: (day) ->
-  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  # }
   {
     name: 'open pack'
     apps: ['kitten-cards']
@@ -210,16 +187,6 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
-  # {
-  #   name: 'interstitial impression'
-  #   format: '0'
-  #   isGroupSizeDependent: true
-  #   numerator:
-  #     select: 'count(userId)'
-  #     from: 'interstitialImpression'
-  #     where: (day) ->
-  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  # }
   {
     name: 'kitten ad click'
     apps: ['mobile']
@@ -261,6 +228,39 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
         "sessionEvents = '1'"
   }
+  # {
+  #   name: 'sessions / DAU'
+  #   format: '0.00'
+  #   numerator:
+  #     select: 'count(distinct(sessionId))'
+  #     from: 'view'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  #   denominator:
+  #     select: 'count(distinct(userId))'
+  #     from: 'view'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  # }
+  # {
+  #   name: 'nps'
+  #   format: '0.00'
+  #   numerator:
+  #     select: 'mean(value)'
+  #     from: 'nps'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  # }
+  # {
+  #   name: 'interstitial impression'
+  #   format: '0'
+  #   isGroupSizeDependent: true
+  #   numerator:
+  #     select: 'count(userId)'
+  #     from: 'interstitialImpression'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  # }
   # {
   #   name: 'egp / view'
   #   numerator:
