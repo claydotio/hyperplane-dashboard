@@ -209,25 +209,25 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
-  {
-    name: 'un-bounce rate'
-    apps: ['kitten-cards']
-    format: '0.00%'
-    isExperimentHidden: true
-    isPercent: true
-    numerator:
-      select: 'count(distinct(sessionId))'
-      from: 'session'
-      where: (day) ->
-        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
-        "sessionEvents = '2'"
-    denominator:
-      select: 'count(distinct(sessionId))'
-      from: 'session'
-      where: (day) ->
-        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
-        "sessionEvents = '1'"
-  }
+  # {
+  #   name: 'un-bounce rate'
+  #   apps: ['kitten-cards']
+  #   format: '0.00%'
+  #   isExperimentHidden: true
+  #   isPercent: true
+  #   numerator:
+  #     select: 'count(distinct(sessionId))'
+  #     from: 'session'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+  #       "sessionEvents = '2'"
+  #   denominator:
+  #     select: 'count(distinct(sessionId))'
+  #     from: 'session'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+  #       "sessionEvents = '1'"
+  # }
   # {
   #   name: 'sessions / DAU'
   #   format: '0.00'
