@@ -198,17 +198,17 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
-  {
-    name: 'request time 95% (ms)'
-    apps: ['kitten-cards']
-    format: '0'
-    isExperimentHidden: true
-    numerator:
-      select: 'percentile(value, 95)'
-      from: 'requestTime'
-      where: (day) ->
-        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  }
+  # {
+  #   name: 'request time 95% (ms)'
+  #   apps: ['kitten-cards']
+  #   format: '0'
+  #   isExperimentHidden: true
+  #   numerator:
+  #     select: 'percentile(value, 95)'
+  #     from: 'requestTime'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  # }
   # {
   #   name: 'un-bounce rate'
   #   apps: ['kitten-cards']
