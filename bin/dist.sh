@@ -32,5 +32,6 @@ git checkout $CURRENT_BRANCH
 ./node_modules/gulp/bin/gulp.js dist
 
 echo "restoring last tag dist"
-rsync -aq ./_tmp_dist/* ./dist
+cp -r ./dist/* ./_tmp_dist
+cp -r ./_tmp_dist/* ./dist
 rm -r ./_tmp_dist
