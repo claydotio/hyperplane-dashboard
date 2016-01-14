@@ -1,0 +1,53 @@
+@require 'zorium-paper/base'
+
+json('zorium-paper/colors.json')
+
+.z-games
+  > .user-filter
+    margin: 16px
+    display: flex
+
+    > .zp-input
+      flex: 1
+
+  > .user-filter-text
+    margin: 16px
+
+  > .overview
+    display: flex
+    flex-wrap: wrap
+
+    > .app
+      flex: 1
+      margin: 16px
+      padding: 16px
+      border: 1px solid $black
+      min-width: 250px
+
+      > .name
+        zp-font-title()
+
+      > .aggregate
+        > .name
+          padding: 2px 16px 2px 0
+
+        > .delta
+          padding-left: 8px
+          color: $red500
+
+        &.is-increase
+          > .delta
+            color: $green500
+
+
+  > .graphs
+    padding: 8px
+
+    > .metric
+      display: block
+      min-width: 450px
+      min-height: 500px
+      box-sizing: border-box
+      border: 1px solid $black
+      padding: 1px
+      margin: 8px

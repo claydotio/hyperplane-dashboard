@@ -42,6 +42,21 @@ module.exports = class Event
 
       _.flatten res.results[0].series?[0].values
 
+  getGameNames: =>
+    accessToken = @accessTokenStream.getValue()
+    @netox.stream config.HYPERPLANE_API_URL + '/events',
+      method: 'post'
+      body:
+        q: 'SHOW TAG VALUES FROM game_play WITH KEY = game'
+      qs: if accessToken? then {accessToken} else {}
+      headers:
+        'Content-Type': 'text/plain' # Avoid CORS preflight
+    .map (res) ->
+      unless res.results
+        throw new Error 'Something went wrong...'
+
+      _.flatten res.results[0].series?[0].values
+
   getTags: =>
     accessToken = @accessTokenStream.getValue()
     @netox.stream config.HYPERPLANE_API_URL + '/events',
