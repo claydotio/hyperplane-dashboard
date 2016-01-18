@@ -57,7 +57,7 @@ module.exports = class Games
     appNames = model.event.query {
       select: 'count(userId)'
       from: 'game_play'
-      where: 'time >= now() - 1d'
+      where: 'time >= now() - 2d AND time < now() - 1d'
       groupBy: 'game'
     }
     .map (result) ->
