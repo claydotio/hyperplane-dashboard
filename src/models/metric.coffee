@@ -52,20 +52,21 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day - 6}ms AND time < #{dayToMS day - 5}ms"
   }
-  {
-    name: 'session length (min) / session'
-    format: '0.00'
-    numerator:
-      select: 'sum(value) / 1000 / 60'
-      from: 'session'
-      where: (day) ->
-        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-    denominator:
-      select: 'count(distinct(sessionId))'
-      from: 'session'
-      where: (day) ->
-        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  }
+  # TODO: enable once database can handle it
+  # {
+  #   name: 'session length (min) / session'
+  #   format: '0.00'
+  #   numerator:
+  #     select: 'sum(value) / 1000 / 60'
+  #     from: 'session'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  #   denominator:
+  #     select: 'count(distinct(sessionId))'
+  #     from: 'session'
+  #     where: (day) ->
+  #       "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  # }
   {
     name: 'Retained DAU %'
     format: '0.00%'
