@@ -85,6 +85,7 @@ metrics = [
   # }
   {
     name: 'DAU'
+    apps: ['kitten-cards']
     format: '0'
     isExperimentHidden: true
     isGroupSizeDependent: true
@@ -96,6 +97,7 @@ metrics = [
   }
   {
     name: 'D1 Retention'
+    apps: ['kitten-cards']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -113,6 +115,7 @@ metrics = [
   }
   {
     name: 'D7 Retention'
+    apps: ['kitten-cards']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -189,13 +192,24 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
-    name: 'kitten ad click'
-    apps: ['mobile']
+    name: 'create trade'
+    apps: ['kitten-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
-      from: 'kittenAdClick'
+      from: 'createTrade'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: 'decline trade'
+    apps: ['kitten-cards']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'declineTrade'
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
