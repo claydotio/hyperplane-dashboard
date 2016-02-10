@@ -201,6 +201,28 @@ metrics = [
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
+  {
+    name: 'onboard step 1'
+    apps: ['kitten-cards']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'onboardStepOne'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: 'onboard step 2'
+    apps: ['kitten-cards']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'onboardStepTwo'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
   # {
   #   name: 'request time 95% (ms)'
   #   apps: ['kitten-cards']
