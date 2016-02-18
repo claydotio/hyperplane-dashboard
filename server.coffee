@@ -103,6 +103,7 @@ app.use (req, res, next) ->
   .then (html) ->
     res.send '<!DOCTYPE html>' + html
   .catch (err) ->
+    console.log err
     if err.html
       # FIXME: use syncronous zorium rendering
       # log.error err

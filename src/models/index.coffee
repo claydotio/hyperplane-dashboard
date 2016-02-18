@@ -7,6 +7,7 @@ User = require './user'
 Event = require './event'
 Experiment = require './experiment'
 Metric = require './metric'
+Mittens = require './mittens'
 
 Promise = if window?
   window.Promise
@@ -23,3 +24,4 @@ module.exports = class Model
     @event = new Event({accessTokenStream, @netox})
     @experiment = new Experiment({accessTokenStream, proxy: request})
     @metric = new Metric({accessTokenStream, @event})
+    @mittens = new Mittens({accessTokenStream, @netox})

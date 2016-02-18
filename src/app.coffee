@@ -7,6 +7,7 @@ Qs = require 'qs'
 config = require './config'
 gulpConfig = require '../gulp_config'
 HomePage = require './pages/home'
+KCUserPage = require './pages/kc/user'
 FourOhFourPage = require './pages/404'
 
 ANIMATION_TIME_MS = 500
@@ -44,12 +45,17 @@ module.exports = class App
       requests: requests.filter ({$page}) -> $page instanceof HomePage
       model
     })
+    $kcUserPage = new KCUserPage({
+      requests: requests.filter ({$page}) -> $page instanceof KCUserPage
+      model
+    })
     $fourOhFourPage = new FourOhFourPage({
       requests: requests.filter ({$page}) -> $page instanceof FourOhFourPage
       model
     })
 
     router.addRoute '/', -> $homePage
+    router.addRoute '/kc/user/:id', -> $kcUserPage
     router.addRoute '*', -> $fourOhFourPage
 
     handleRequest = requests.doOnNext ({req, res, route, $page}) =>
@@ -58,48 +64,20 @@ module.exports = class App
       if $page instanceof FourOhFourPage
         res.status? 404
 
-      isEntering = Boolean $currentPage
-
-      if isEntering and window?
-        @state.set {
-          isEntering
-          $nextPage: $page
-        }
-
-        window.requestAnimationFrame =>
-          setTimeout =>
-            @state.set
-              isActive: true
-
-        setTimeout =>
-          @state.set
-            $currentPage: $page
-            $nextPage: null
-            isEntering: false
-            isActive: false
-        , ANIMATION_TIME_MS
-      else
-        @state.set
-          $currentPage: $page
+      @state.set
+        $currentPage: $page
 
     @state = z.state {
       handleRequest: handleRequest
       $currentPage: null
-      $nextPage: null
-      isEntering: false
-      isActive: false
     }
 
   render: =>
-    {$nextPage, $currentPage, isEntering, isActive} = @state.getValue()
+    {$currentPage} = @state.getValue()
 
     z 'html',
       $currentPage?.renderHead {styles, bundlePath}
       z 'body',
         z '#zorium-root',
           z '.z-root',
-            className: z.classKebab {isEntering, isActive}
-            z '.current',
-              $currentPage
-            z '.next',
-              $nextPage
+            $currentPage
