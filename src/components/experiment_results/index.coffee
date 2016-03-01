@@ -45,7 +45,7 @@ module.exports = class ExperimentResults
             experimentFilter = _.map(experiment.apps, (app) ->
               "\"#{app}_#{experiment.key}\"='#{choice}'"
             ).join(' OR ')
-            where = "(#{experimentFilter})"
+            where = "(#{experimentFilter})" # " AND uaOSName='Chromium OS'"
 
             today = util.dateToDay(new Date())
             createdDay = util.dateToDay(new Date(experiment.createdAt))
