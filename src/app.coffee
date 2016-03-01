@@ -27,7 +27,7 @@ bundlePath = if not window? and config.ENV is config.ENVS.PROD
   stats = JSON.parse \
     fs.readFileSync gulpConfig.paths.dist + '/stats.json', 'utf-8'
 
-  "/#{stats.hash}.bundle.js"
+  "/#{stats.hash}.bundle.js?#{Date.now()}"
 else
   null
 

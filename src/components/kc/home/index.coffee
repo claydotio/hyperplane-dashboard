@@ -20,6 +20,8 @@ else
 if window?
   require './index.styl'
 
+PT_UTC_OFFSET = -8 * 60
+
 module.exports = class KittenCards
   constructor: ({model}) ->
 
@@ -27,6 +29,7 @@ module.exports = class KittenCards
       @state = z.state {skip: true}
       return # no server-side rendering...
 
+    today = moment().utcOffset(PT_UTC_OFFSET).startOf('day')
 
     @state = z.state
       # chartedMetrics: chartedMetrics
@@ -34,10 +37,10 @@ module.exports = class KittenCards
       topSpendersWeek: model.mittens.getTopSpenders({duration: 'week'})
       topSpendersDay: model.mittens.getTopSpenders({duration: 'day'})
       genericStatsYesterday: model.mittens.getGenericStats {
-        date: moment().subtract(1, 'days').toDate()
+        date: today.clone().subtract(1, 'days').toDate()
       }
       genericStatsToday: model.mittens.getGenericStats {
-        date: moment().toDate()
+        date: today.clone().toDate()
       }
 
   render: =>
