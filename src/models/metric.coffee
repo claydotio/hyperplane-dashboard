@@ -10,7 +10,7 @@ dayToMS = util.dayToMS
 metrics = [
   {
     name: 'Revenue (USD)'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '$0.00'
     isGroupSizeDependent: true
     numerator:
@@ -21,7 +21,7 @@ metrics = [
   }
   {
     name: 'ARPDAU (USD)'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '$0.000'
     isGroupSizeDependent: true
     numerator:
@@ -37,7 +37,7 @@ metrics = [
   }
   {
     name: '7d LTV (USD)'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '$0.000'
     isGroupSizeDependent: true
     numerator:
@@ -85,7 +85,7 @@ metrics = [
   # }
   {
     name: 'DAU'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isExperimentHidden: true
     isGroupSizeDependent: true
@@ -97,7 +97,7 @@ metrics = [
   }
   {
     name: 'D1 Retention'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -115,7 +115,7 @@ metrics = [
   }
   {
     name: 'D7 Retention'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -133,7 +133,7 @@ metrics = [
   }
   {
     name: 'shares / DAU'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0.00'
     numerator:
       select: 'count(userId)'
@@ -148,7 +148,7 @@ metrics = [
   }
   {
     name: 'open pack'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -159,7 +159,7 @@ metrics = [
   }
   {
     name: 'claim reward'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -170,7 +170,7 @@ metrics = [
   }
   {
     name: 'create trade'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -181,7 +181,7 @@ metrics = [
   }
   {
     name: 'complete trade'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -192,7 +192,7 @@ metrics = [
   }
   {
     name: 'decline trade'
-    apps: ['kitten-cards']
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -202,30 +202,19 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
-    name: 'onboard step 1'
-    apps: ['kitten-cards']
+    name: 'share'
+    apps: ['kitten-cards', 'trump-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
-      from: 'onboardStepOne'
-      where: (day) ->
-        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
-  }
-  {
-    name: 'onboard step 2'
-    apps: ['kitten-cards']
-    format: '0'
-    isGroupSizeDependent: true
-    numerator:
-      select: 'count(userId)'
-      from: 'onboardStepTwo'
+      from: 'share'
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   # {
   #   name: 'request time 95% (ms)'
-  #   apps: ['kitten-cards']
+  #   apps: ['kitten-cards', 'trump-cards']
   #   format: '0'
   #   isExperimentHidden: true
   #   numerator:
@@ -236,7 +225,7 @@ metrics = [
   # }
   # {
   #   name: 'un-bounce rate'
-  #   apps: ['kitten-cards']
+  #   apps: ['kitten-cards', 'trump-cards']
   #   format: '0.00%'
   #   isExperimentHidden: true
   #   isPercent: true

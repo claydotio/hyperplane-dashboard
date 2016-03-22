@@ -14,7 +14,8 @@ ExperimentResults = require '../experiment_results'
 if window?
   require './index.styl'
 
-ALLOWED_APPS = ['kitten-cards']
+ALLOWED_APPS = ['kitten-cards', 'trump-cards']
+# ALLOWED_APPS = ['trump-cards']
 
 module.exports = class Experiments
   constructor: ({model}) ->

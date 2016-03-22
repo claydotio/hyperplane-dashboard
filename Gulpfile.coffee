@@ -9,7 +9,7 @@ nodemon = require 'gulp-nodemon'
 gulpWebpack = require 'gulp-webpack'
 coffeelint = require 'gulp-coffeelint'
 RewirePlugin = require 'rewire-webpack'
-istanbul = require 'gulp-coffee-istanbul'
+# istanbul = require 'gulp-coffee-istanbul'
 WebpackDevServer = require 'webpack-dev-server'
 clayLintConfig = require 'clay-coffeescript-style-guide'
 ExtractTextPlugin = require 'extract-text-webpack-plugin'
@@ -34,16 +34,16 @@ gulp.task 'test:lint', ->
     .pipe coffeelint(null, clayLintConfig)
     .pipe coffeelint.reporter()
 
-gulp.task 'test:coverage', ->
-  gulp.src cfg.paths.cover
-    .pipe istanbul includeUntested: false
-    .pipe istanbul.hookRequire()
-    .on 'finish', ->
-      gulp.src cfg.paths.unitTests.concat [cfg.paths.serverTests]
-        .pipe mocha()
-        .pipe istanbul.writeReports({
-          reporters: ['html', 'text', 'text-summary']
-        })
+# gulp.task 'test:coverage', ->
+#   gulp.src cfg.paths.cover
+#     .pipe istanbul includeUntested: false
+#     .pipe istanbul.hookRequire()
+#     .on 'finish', ->
+#       gulp.src cfg.paths.unitTests.concat [cfg.paths.serverTests]
+#         .pipe mocha()
+#         .pipe istanbul.writeReports({
+#           reporters: ['html', 'text', 'text-summary']
+#         })
 
 gulp.task 'test:unit', ->
   gulp.src cfg.paths.unitTests
