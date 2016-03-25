@@ -6,7 +6,7 @@ Menu = require '../../components/menu'
 Tabs = require '../../components/tabs'
 Experiments = require '../../components/experiments'
 Metrics = require '../../components/metrics'
-KittenCards = require '../../components/kc/home'
+TradingCards = require '../../components/trading_cards/home'
 MetaInfo = require '../../components/meta_info'
 RealTime = require '../../components/real_time'
 Games = require '../../components/games'
@@ -23,7 +23,8 @@ module.exports = class HomePage
     @$tabs = new Tabs({selectedIndex})
     @$experiments = new Experiments({model})
     @$metrics = new Metrics({model})
-    @$kittenCards = new KittenCards({model})
+    @$kittenCards = new TradingCards({model, key: 'kittencards'})
+    @$trumpCards = new TradingCards({model, key: 'trumpcards'})
     @$metaInfo = new MetaInfo({model})
     @$realTime = new RealTime({model})
     @$games = new Games({model})
@@ -37,7 +38,7 @@ module.exports = class HomePage
   render: =>
     {selectedIndex} = @state.getValue()
 
-    tabs = ['kittencards', 'metrics', 'experiments']
+    tabs = ['kittencards', 'trumpcards', 'metrics', 'experiments']
     #, 'games', 'real-time', 'meta']
 
     z '.p-home',
@@ -53,6 +54,8 @@ module.exports = class HomePage
           @$metrics
         when 'kittencards'
           @$kittenCards
+        when 'trumpcards'
+          @$trumpCards
         when 'meta'
           @$metaInfo
         when 'real-time'

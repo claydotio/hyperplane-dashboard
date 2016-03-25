@@ -4,22 +4,22 @@ moment = require 'moment'
 
 Head = require '../../../components/head'
 Menu = require '../../../components/menu'
-KCUser = require '../../../components/kc/user'
+TradingCardsUser = require '../../../components/trading_cards/user'
 if window?
   require './index.styl'
 
 module.exports = class UserPage
-  constructor: ({model, requests}) ->
+  constructor: ({model, requests, key}) ->
 
     userId = requests.map ({route}) ->
       route.params.id
 
     user = userId.flatMapLatest (userId) ->
-      model.mittens.getUserById userId
+      model[key].getUserById userId
 
     @$head = new Head()
     @$menu = new Menu()
-    @$kcUser = new KCUser({model, user})
+    @$tradingCardsUser = new TradingCardsUser({model, user, key})
 
     @state = z.state
       userId: userId
@@ -44,4 +44,4 @@ module.exports = class UserPage
           "#{user?.username} (join: #{joinDate})"
       }
 
-      @$kcUser
+      @$tradingCardsUser

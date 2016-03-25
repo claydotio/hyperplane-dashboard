@@ -7,7 +7,7 @@ User = require './user'
 Event = require './event'
 Experiment = require './experiment'
 Metric = require './metric'
-Mittens = require './mittens'
+TradingCard = require './trading_card'
 
 Promise = if window?
   window.Promise
@@ -24,4 +24,9 @@ module.exports = class Model
     @event = new Event({accessTokenStream, @netox})
     @experiment = new Experiment({accessTokenStream, proxy: request})
     @metric = new Metric({accessTokenStream, @event})
-    @mittens = new Mittens({accessTokenStream, @netox})
+    @kittencards = new TradingCard({
+      accessTokenStream, @netox, backend: 'mittens'
+    })
+    @trumpcards = new TradingCard({
+      accessTokenStream, @netox, backend: 'donald'
+    })

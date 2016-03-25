@@ -7,7 +7,7 @@ Qs = require 'qs'
 config = require './config'
 gulpConfig = require '../gulp_config'
 HomePage = require './pages/home'
-KCUserPage = require './pages/kc/user'
+TradingCardsUserPage = require './pages/trading_cards/user'
 FourOhFourPage = require './pages/404'
 
 ANIMATION_TIME_MS = 500
@@ -45,9 +45,17 @@ module.exports = class App
       requests: requests.filter ({$page}) -> $page instanceof HomePage
       model
     })
-    $kcUserPage = new KCUserPage({
-      requests: requests.filter ({$page}) -> $page instanceof KCUserPage
+    $kittenCardsUserPage = new TradingCardsUserPage({
+      requests: requests.filter ({$page}) ->
+        $page is $kittenCardsUserPage
       model
+      key: 'kittencards'
+    })
+    $trumpCardsUserPage = new TradingCardsUserPage({
+      requests: requests.filter ({$page}) ->
+        $page is $trumpCardsUserPage
+      model
+      key: 'trumpcards'
     })
     $fourOhFourPage = new FourOhFourPage({
       requests: requests.filter ({$page}) -> $page instanceof FourOhFourPage
@@ -55,7 +63,8 @@ module.exports = class App
     })
 
     router.addRoute '/', -> $homePage
-    router.addRoute '/kc/user/:id', -> $kcUserPage
+    router.addRoute '/kittenCards/user/:id', -> $kittenCardsUserPage
+    router.addRoute '/trumpCards/user/:id', -> $trumpCardsUserPage
     router.addRoute '*', -> $fourOhFourPage
 
     handleRequest = requests.doOnNext ({req, res, route, $page}) =>
