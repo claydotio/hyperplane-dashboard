@@ -7,6 +7,7 @@ Tabs = require '../../components/tabs'
 Experiments = require '../../components/experiments'
 Metrics = require '../../components/metrics'
 TradingCards = require '../../components/trading_cards/home'
+Bot = require '../../components/bot'
 MetaInfo = require '../../components/meta_info'
 RealTime = require '../../components/real_time'
 Games = require '../../components/games'
@@ -23,6 +24,7 @@ module.exports = class HomePage
     @$tabs = new Tabs({selectedIndex})
     @$experiments = new Experiments({model})
     @$metrics = new Metrics({model})
+    @$bot = new Bot({model})
     @$kittenCards = new TradingCards({model, key: 'kittencards'})
     @$trumpCards = new TradingCards({model, key: 'trumpcards'})
     @$metaInfo = new MetaInfo({model})
@@ -38,7 +40,7 @@ module.exports = class HomePage
   render: =>
     {selectedIndex} = @state.getValue()
 
-    tabs = ['kittencards', 'trumpcards', 'metrics', 'experiments']
+    tabs = ['bot', 'kittencards', 'trumpcards', 'metrics', 'experiments']
     #, 'games', 'real-time', 'meta']
 
     z '.p-home',
@@ -48,6 +50,8 @@ module.exports = class HomePage
         $tabs: z @$tabs,
           items: tabs
       switch tabs[selectedIndex]
+        when 'bot'
+          @$bot
         when 'experiments'
           @$experiments
         when 'metrics'

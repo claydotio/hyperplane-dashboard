@@ -8,6 +8,42 @@ util = require '../lib/util'
 dayToMS = util.dayToMS
 
 metrics = [
+
+  {
+    name: 'chat messages'
+    apps: ['clay']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: 'chat games'
+    apps: ['clay']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatGameCreate'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: 'chat game rounds'
+    apps: ['clay']
+    format: '0'
+    isGroupSizeDependent: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatGameRoundCreate'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+
+
   {
     name: 'Revenue (USD)'
     apps: ['kitten-cards', 'trump-cards']

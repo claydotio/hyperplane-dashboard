@@ -23,6 +23,10 @@ module.exports =
           REPLACE_ENV_DONALD_ADMIN_PASSWORD? and
             REPLACE_ENV_DONALD_ADMIN_PASSWORD or
           'insecurepassword'
+  PULSAR_ADMIN_PASSWORD: process.env.PULSAR_ADMIN_PASSWORD or
+          REPLACE_ENV_PULSAR_ADMIN_PASSWORD? and
+            REPLACE_ENV_PULSAR_ADMIN_PASSWORD or
+          'insecurepassword'
   HYPERPLANE_API_URL: process.env.HYPERPLANE_API_URL or
           REPLACE_ENV_PUBLIC_HYPERPLANE_API_URL? and
             REPLACE_ENV_PUBLIC_HYPERPLANE_API_URL or
@@ -35,6 +39,10 @@ module.exports =
           REPLACE_ENV_PUBLIC_DONALD_API_URL? and
             REPLACE_ENV_PUBLIC_DONALD_API_URL or
           'http://localhost:50290'
+  PULSAR_API_URL: process.env.PULSAR_API_URL or
+          REPLACE_ENV_PUBLIC_PULSAR_API_URL? and
+            REPLACE_ENV_PUBLIC_PULSAR_API_URL or
+          'http://localhost:50260'
 
   ENV: process.env.NODE_ENV or
        REPLACE_ENV_NODE_ENV? and REPLACE_ENV_NODE_ENV or

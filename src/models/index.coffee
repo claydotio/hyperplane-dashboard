@@ -7,6 +7,7 @@ User = require './user'
 Event = require './event'
 Experiment = require './experiment'
 Metric = require './metric'
+Bot = require './bot'
 TradingCard = require './trading_card'
 
 Promise = if window?
@@ -24,6 +25,7 @@ module.exports = class Model
     @event = new Event({accessTokenStream, @netox})
     @experiment = new Experiment({accessTokenStream, proxy: request})
     @metric = new Metric({accessTokenStream, @event})
+    @bot = new Bot({accessTokenStream, @netox})
     @kittencards = new TradingCard({
       accessTokenStream, @netox, backend: 'mittens'
     })

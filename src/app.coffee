@@ -8,6 +8,7 @@ config = require './config'
 gulpConfig = require '../gulp_config'
 HomePage = require './pages/home'
 TradingCardsUserPage = require './pages/trading_cards/user'
+BotMessagesPage = require './pages/bot/messages'
 FourOhFourPage = require './pages/404'
 
 ANIMATION_TIME_MS = 500
@@ -57,6 +58,11 @@ module.exports = class App
       model
       key: 'trumpcards'
     })
+    $botMessagesPage = new BotMessagesPage({
+      requests: requests.filter ({$page}) ->
+        $page is $botMessagesPage
+      model
+    })
     $fourOhFourPage = new FourOhFourPage({
       requests: requests.filter ({$page}) -> $page instanceof FourOhFourPage
       model
@@ -65,6 +71,7 @@ module.exports = class App
     router.addRoute '/', -> $homePage
     router.addRoute '/kittenCards/user/:id', -> $kittenCardsUserPage
     router.addRoute '/trumpCards/user/:id', -> $trumpCardsUserPage
+    router.addRoute '/bot/messages/:userId', -> $botMessagesPage
     router.addRoute '*', -> $fourOhFourPage
 
     handleRequest = requests.doOnNext ({req, res, route, $page}) =>
