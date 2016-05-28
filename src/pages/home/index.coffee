@@ -27,6 +27,7 @@ module.exports = class HomePage
     @$bot = new Bot({model})
     @$kittenCards = new TradingCards({model, key: 'kittencards'})
     @$trumpCards = new TradingCards({model, key: 'trumpcards'})
+    @$puppyCards = new TradingCards({model, key: 'puppycards'})
     @$metaInfo = new MetaInfo({model})
     @$realTime = new RealTime({model})
     @$games = new Games({model})
@@ -40,7 +41,8 @@ module.exports = class HomePage
   render: =>
     {selectedIndex} = @state.getValue()
 
-    tabs = ['bot', 'kittencards', 'trumpcards', 'metrics', 'experiments']
+    tabs = ['bot', 'kittencards', 'trumpcards', 'puppycards',
+            'metrics', 'experiments']
     #, 'games', 'real-time', 'meta']
 
     z '.p-home',
@@ -60,6 +62,8 @@ module.exports = class HomePage
           @$kittenCards
         when 'trumpcards'
           @$trumpCards
+        when 'puppycards'
+          @$puppyCards
         when 'meta'
           @$metaInfo
         when 'real-time'

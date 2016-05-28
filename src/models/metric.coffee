@@ -22,25 +22,62 @@ metrics = [
   }
   {
     name: 'chat games'
-    apps: ['clay']
+    apps: ['indecency', 'trivia', 'hangman', 'tic-tac-toe']
     format: '0'
     isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
-      from: 'chatGameCreate'
+      from: 'gameCreate'
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
     name: 'chat game rounds'
-    apps: ['clay']
+    apps: ['indecency', 'trivia', 'hangman', 'tic-tac-toe']
     format: '0'
     isGroupSizeDependent: true
     numerator:
       select: 'count(userId)'
-      from: 'chatGameRoundCreate'
+      from: 'gameRoundCreate'
       where: (day) ->
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+
+  {
+    name: 'D1 Retention'
+    apps: ['clay']
+    format: '0.00%'
+    isPercent: true
+    numerator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+        "joinDay = '#{day - 1}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
+        "joinDay = '#{day - 1}'"
+  }
+  {
+    name: 'D7 Retention'
+    apps: ['clay']
+    format: '0.00%'
+    isPercent: true
+    numerator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms AND " +
+        "joinDay = '#{day - 7}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 7}ms AND time < #{dayToMS day - 6}ms AND " +
+        "joinDay = '#{day - 7}'"
   }
 
 

@@ -28,19 +28,20 @@ module.exports = class Event
     @batchCache = {}
 
   getAppNames: =>
-    accessToken = @accessTokenStream.getValue()
-    @netox.stream config.HYPERPLANE_API_URL + '/events',
-      method: 'post'
-      body:
-        q: 'SHOW TAG VALUES FROM view WITH KEY = app'
-      qs: if accessToken? then {accessToken} else {}
-      headers:
-        'Content-Type': 'text/plain' # Avoid CORS preflight
-    .map (res) ->
-      unless res.results
-        throw new Error 'Something went wrong...'
-
-      _.flatten res.results[0].series?[0].values
+    Rx.Observable.just config.ALLOWED_APPS
+    # accessToken = @accessTokenStream.getValue()
+    # @netox.stream config.HYPERPLANE_API_URL + '/events',
+    #   method: 'post'
+    #   body:
+    #     q: 'SHOW TAG VALUES FROM view WITH KEY = app'
+    #   qs: if accessToken? then {accessToken} else {}
+    #   headers:
+    #     'Content-Type': 'text/plain' # Avoid CORS preflight
+    # .map (res) ->
+    #   unless res.results
+    #     throw new Error 'Something went wrong...'
+    #
+    #   _.flatten res.results[0].series?[0].values
 
   getGameNames: =>
     accessToken = @accessTokenStream.getValue()

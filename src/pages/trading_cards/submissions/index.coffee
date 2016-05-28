@@ -4,32 +4,34 @@ moment = require 'moment'
 
 Head = require '../../../components/head'
 Menu = require '../../../components/menu'
-BotMessages = require '../../../components/bot/messages'
+TradingCardsSubmissions = require '../../../components/trading_cards/submissions'
 if window?
   require './index.styl'
 
-module.exports = class UserPage
+module.exports = class SubmissionsPage
   constructor: ({model, requests, key}) ->
 
-    chatId = requests.map ({route}) ->
-      route.params.chatId
 
     @$head = new Head()
     @$menu = new Menu()
-    @$botMessages = new BotMessages({model, chatId, key})
+    @$tradingCardsSubmissions = new TradingCardsSubmissions({model, key})
+
+    @state = z.state {}
 
 
   renderHead: (params) =>
     z @$head, params
 
   render: =>
-    z '.p-bot-messages',
+
+    z '.p-kc-user',
       z @$menu, {
         $tools: z '.p-home_title',
           z 'span.back', {
             onclick: ->
               window.history.back()
           }, '(back)'
+          'Submissions'
       }
 
-      @$botMessages
+      @$tradingCardsSubmissions

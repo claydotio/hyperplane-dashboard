@@ -10,6 +10,11 @@ hostToHostname = (host) ->
   host.split(':')[0]
 
 module.exports =
+  ALLOWED_APPS: [
+    'kitten-cards', 'trump-cards', 'indecency',
+    'trivia', 'hangman', 'tic-tac-toe', 'clay'
+  ]
+
   AUTH_COOKIE: 'accessToken'
   HYPERPLANE_ADMIN_PASSWORD: process.env.HYPERPLANE_ADMIN_PASSWORD or
           REPLACE_ENV_HYPERPLANE_ADMIN_PASSWORD? and

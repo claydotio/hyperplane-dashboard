@@ -19,23 +19,24 @@ if window?
 PT_UTC_OFFSET = -8 * 60
 
 module.exports = class Bot
-  constructor: ({model, userId}) ->
-    messages = userId.flatMapLatest model.bot.getMessagesByUserId
-    user = userId.flatMapLatest model.bot.getUserById
+  constructor: ({model, chatId}) ->
+    messages = chatId.flatMapLatest model.bot.getMessagesByChatId
+    # user = userId.flatMapLatest model.bot.getUserById
 
     @state = z.state
       messages: messages
-      user: user
+      # user: user
 
   render: =>
     {messages, user} = @state.getValue()
 
     z '.z-bot-messages',
       z '.g-grid',
-        z 'strong', user?.name
+        # z 'strong', user?.name
         _.map messages, (message) ->
           z '.message-group',
             z '.responses',
               _.map message.responses, ({text}) ->
                 z '.response', "bot: #{text}"
-            z '.message', message.message.text or 'app-link'
+            z '.message',
+              "#{message.userId}: #{(message.message.text or 'app-link')}"

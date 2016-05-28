@@ -8,6 +8,7 @@ config = require './config'
 gulpConfig = require '../gulp_config'
 HomePage = require './pages/home'
 TradingCardsUserPage = require './pages/trading_cards/user'
+TradingCardsSubmissionsPage = require './pages/trading_cards/submissions'
 BotMessagesPage = require './pages/bot/messages'
 FourOhFourPage = require './pages/404'
 
@@ -52,6 +53,24 @@ module.exports = class App
       model
       key: 'kittencards'
     })
+    $kittenCardsSubmissionsPage = new TradingCardsSubmissionsPage({
+      requests: requests.filter ({$page}) ->
+        $page is $kittenCardsSubmissionsPage
+      model
+      key: 'kittencards'
+    })
+    $puppyCardsUserPage = new TradingCardsUserPage({
+      requests: requests.filter ({$page}) ->
+        $page is $puppyCardsUserPage
+      model
+      key: 'puppycards'
+    })
+    $puppyCardsSubmissionsPage = new TradingCardsSubmissionsPage({
+      requests: requests.filter ({$page}) ->
+        $page is $puppyCardsSubmissionsPage
+      model
+      key: 'puppycards'
+    })
     $trumpCardsUserPage = new TradingCardsUserPage({
       requests: requests.filter ({$page}) ->
         $page is $trumpCardsUserPage
@@ -70,8 +89,11 @@ module.exports = class App
 
     router.addRoute '/', -> $homePage
     router.addRoute '/kittenCards/user/:id', -> $kittenCardsUserPage
+    router.addRoute '/kittenCards/submissions', -> $kittenCardsSubmissionsPage
+    router.addRoute '/puppyCards/user/:id', -> $puppyCardsUserPage
+    router.addRoute '/puppyCards/submissions', -> $puppyCardsSubmissionsPage
     router.addRoute '/trumpCards/user/:id', -> $trumpCardsUserPage
-    router.addRoute '/bot/messages/:userId', -> $botMessagesPage
+    router.addRoute '/bot/messages/:chatId', -> $botMessagesPage
     router.addRoute '*', -> $fourOhFourPage
 
     handleRequest = requests.doOnNext ({req, res, route, $page}) =>

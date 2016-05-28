@@ -29,6 +29,9 @@ module.exports = class Model
     @kittencards = new TradingCard({
       accessTokenStream, @netox, backend: 'mittens'
     })
+    @puppycards = new TradingCard({
+      accessTokenStream, @netox, backend: 'paws'
+    })
     @trumpcards = new TradingCard({
       accessTokenStream, @netox, backend: 'donald'
     })

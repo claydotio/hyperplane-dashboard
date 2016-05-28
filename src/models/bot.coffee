@@ -19,10 +19,10 @@ module.exports = class Bot
       headers:
         Authorization: "Basic #{b64encode AUTH}"
 
-  getMessagesByUserId: (userId) =>
+  getMessagesByChatId: (chatId) =>
     @netox.stream PATH + '/adminMetrics/messages',
       qs:
-        userId: userId
+        chatId: chatId
       headers:
         Authorization: "Basic #{b64encode AUTH}"
 

@@ -47,7 +47,10 @@ module.exports = class Bot
           _.map stats?.unknownResponses, (response) ->
             z '.response', {
               onclick: ->
-                alert _.pluck(response.reduction, 'feedback').join(' | ')
+                alert(
+                  _.pluck(response.reduction, 'feedback').join(' | ') + '...' +
+                  _.pluck(response.reduction, 'userId').join(' | ')
+                )
             },
               z 'span.count', "#{response.reduction.length} "
               z 'span.message', response.group
@@ -62,7 +65,7 @@ module.exports = class Bot
           _.map stats?.recentMessages, (message) ->
             z 'div',
               z 'a.message', {
-                href: "/bot/messages/#{message.userId}"
+                href: "/bot/messages/#{message.chatId}"
                 onclick: (e) ->
                   e.preventDefault()
                   z.router.go e.target.href

@@ -9,19 +9,17 @@ Button = require 'zorium-paper/button'
 paperColors = require 'zorium-paper/colors.json'
 log = require 'loglevel'
 
+config = require '../../config'
 ExperimentResults = require '../experiment_results'
 
 if window?
   require './index.styl'
 
-ALLOWED_APPS = ['kitten-cards', 'trump-cards', 'clay']
-# ALLOWED_APPS = ['trump-cards']
-
 module.exports = class Experiments
   constructor: ({model}) ->
     experiments = model.experiment.getAll().map (experiments) ->
       _.filter experiments, ({apps}) ->
-        _.any ALLOWED_APPS, (app) ->
+        _.any config.ALLOWED_APPS, (app) ->
           apps.indexOf(app) isnt -1
 
     @$fab = new FloatingActionButton()
