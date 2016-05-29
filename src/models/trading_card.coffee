@@ -11,14 +11,19 @@ b64encode = (str) ->
 # HACK: (any kc access token works)
 ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VySWQiOiJkNTg5NzViZi1lMmUwLTRlNWQtYmRhMi0xZmY4ZTAxOWEyMjAiLCJzY29wZXMiOlsiKiJdLCJpYXQiOjE0NTU4MjQ3MTMsImlzcyI6ImNsYXkiLCJzdWIiOiJkNTg5NzViZi1lMmUwLTRlNWQtYmRhMi0xZmY4ZTAxOWEyMjAifQ.SkEiEk4pqsz42nOEglTIPjcqvFi_k5IRk6NDeJcWC09S7NHvqEPPkocLK1MgKo1JEcAgv-gVXMqJIsgQByjlhA'
 MITTENS_PATH = config.MITTENS_API_URL
+PAWS_PATH = config.PAWS_API_URL
 DONALD_PATH = config.DONALD_API_URL
 
 module.exports = class TradingCard
   constructor: ({@accessTokenStream, @netox, backend}) ->
-    @path = if backend is 'mittens' then MITTENS_PATH else DONALD_PATH
-    pass = if backend is 'mittens' \
-           then config.MITTENS_ADMIN_PASSWORD
-           else config.DONALD_ADMIN_PASSWORD
+    @path = switch backend
+      when 'mittens' then MITTENS_PATH
+      when 'paws' then PAWS_PATH
+      else DONALD_PATH
+    pass = switch backend
+      when 'mittens' then config.MITTENS_ADMIN_PASSWORD
+      when 'paws' then config.PAWS_ADMIN_PASSWORD
+      else config.DONALD_ADMIN_PASSWORD
 
     @auth = "admin:#{pass}"
 
@@ -67,11 +72,11 @@ module.exports = class TradingCard
       headers:
         Authorization: "Basic #{b64encode @auth}"
 
-  rejectSubmission: (submissionId) =>
+  rejectSubmission: (submissionId, {reason}) =>
     @netox.fetch @path + '/adminSubmissions/reject',
       method: 'POST'
       isIdempotent: true
-      body: {submissionId}
+      body: {submissionId, reason}
       headers:
         Authorization: "Basic #{b64encode @auth}"
 

@@ -24,6 +24,10 @@ module.exports =
           REPLACE_ENV_MITTENS_ADMIN_PASSWORD? and
             REPLACE_ENV_MITTENS_ADMIN_PASSWORD or
           'insecurepassword'
+  PAWS_ADMIN_PASSWORD: process.env.PAWS_ADMIN_PASSWORD or
+          REPLACE_ENV_PAWS_ADMIN_PASSWORD? and
+            REPLACE_ENV_PAWS_ADMIN_PASSWORD or
+          'insecurepassword'
   DONALD_ADMIN_PASSWORD: process.env.DONALD_ADMIN_PASSWORD or
           REPLACE_ENV_DONALD_ADMIN_PASSWORD? and
             REPLACE_ENV_DONALD_ADMIN_PASSWORD or
@@ -39,6 +43,10 @@ module.exports =
   MITTENS_API_URL: process.env.MITTENS_API_URL or
           REPLACE_ENV_PUBLIC_MITTENS_API_URL? and
             REPLACE_ENV_PUBLIC_MITTENS_API_URL or
+          'http://localhost:50230'
+  PAWS_API_URL: process.env.PAWS_API_URL or
+          REPLACE_ENV_PUBLIC_PAWS_API_URL? and
+            REPLACE_ENV_PUBLIC_PAWS_API_URL or
           'http://localhost:50230'
   DONALD_API_URL: process.env.DONALD_API_URL or
           REPLACE_ENV_PUBLIC_DONALD_API_URL? and

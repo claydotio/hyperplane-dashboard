@@ -54,9 +54,15 @@ module.exports = class TradingCardsSubmissions
               href: '#'
               onclick: (e) =>
                 e?.preventDefault()
-                @model[@key].rejectSubmission submission.id
+                reason = window.prompt 'Reason'
+                if reason
+                  @model[@key].rejectSubmission submission.id, {reason}
             }, 'Reject'
           z 'img', {
             src: submission.image.originalUrl#versions[0].url
             width: 300
+          }
+          z '.preview', {
+            style:
+              backgroundImage: "url(#{submission.image.versions[0].url})"
           }
