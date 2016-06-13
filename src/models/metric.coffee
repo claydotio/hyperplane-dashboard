@@ -11,7 +11,7 @@ metrics = [
 
   {
     name: 'chat messages'
-    apps: ['clay']
+    apps: ['clay-bot']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -45,7 +45,7 @@ metrics = [
 
   {
     name: 'D1 Retention'
-    apps: ['clay']
+    apps: ['clay-bot']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -63,7 +63,7 @@ metrics = [
   }
   {
     name: 'D7 Retention'
-    apps: ['clay']
+    apps: ['clay-bot']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -83,7 +83,7 @@ metrics = [
 
   {
     name: 'Revenue (USD)'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '$0.00'
     isGroupSizeDependent: true
     numerator:
@@ -94,7 +94,7 @@ metrics = [
   }
   {
     name: 'ARPDAU (USD)'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '$0.000'
     isGroupSizeDependent: true
     numerator:
@@ -110,7 +110,7 @@ metrics = [
   }
   {
     name: '7d LTV (USD)'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '$0.000'
     isGroupSizeDependent: true
     numerator:
@@ -158,7 +158,7 @@ metrics = [
   # }
   {
     name: 'DAU'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards', 'clay']
     format: '0'
     isExperimentHidden: true
     isGroupSizeDependent: true
@@ -170,7 +170,7 @@ metrics = [
   }
   {
     name: 'D1 Retention'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards', 'clay']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -188,7 +188,7 @@ metrics = [
   }
   {
     name: 'D7 Retention'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards', 'clay']
     format: '0.00%'
     isPercent: true
     numerator:
@@ -206,7 +206,7 @@ metrics = [
   }
   {
     name: 'shares / DAU'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0.00'
     numerator:
       select: 'count(userId)'
@@ -221,7 +221,7 @@ metrics = [
   }
   {
     name: 'open pack'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -232,7 +232,7 @@ metrics = [
   }
   {
     name: 'claim reward'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -243,7 +243,7 @@ metrics = [
   }
   {
     name: 'create trade'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -254,7 +254,7 @@ metrics = [
   }
   {
     name: 'complete trade'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -265,7 +265,7 @@ metrics = [
   }
   {
     name: 'decline trade'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -276,7 +276,7 @@ metrics = [
   }
   {
     name: 'share'
-    apps: ['kitten-cards', 'trump-cards']
+    apps: ['kitten-cards', 'puppy-cards']
     format: '0'
     isGroupSizeDependent: true
     numerator:
@@ -287,7 +287,7 @@ metrics = [
   }
   # {
   #   name: 'request time 95% (ms)'
-  #   apps: ['kitten-cards', 'trump-cards']
+  #   apps: ['kitten-cards', 'puppy-cards']
   #   format: '0'
   #   isExperimentHidden: true
   #   numerator:
@@ -298,7 +298,7 @@ metrics = [
   # }
   # {
   #   name: 'un-bounce rate'
-  #   apps: ['kitten-cards', 'trump-cards']
+  #   apps: ['kitten-cards', 'puppy-cards']
   #   format: '0.00%'
   #   isExperimentHidden: true
   #   isPercent: true
