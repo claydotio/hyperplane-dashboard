@@ -21,6 +21,40 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
+    name: '2 day SPS'
+    apps: ['clay-bot']
+    isRunningAverage: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 2}ms AND time < #{dayToMS day}ms AND " +
+        "joinDay = '#{day - 2}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 2}ms AND time < #{dayToMS day}ms AND " +
+        "joinDay = '#{day - 2}'"
+  }
+  {
+    name: '5 day SPS'
+    apps: ['clay-bot']
+    isRunningAverage: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 5}ms AND time < #{dayToMS day}ms AND " +
+        "joinDay = '#{day - 5}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 5}ms AND time < #{dayToMS day - 4}ms AND " +
+        "joinDay = '#{day - 5}'"
+  }
+  {
     name: 'chat games'
     apps: ['indecency', 'trivia', 'hangman', 'tic-tac-toe']
     format: '0'
@@ -379,22 +413,6 @@ metrics = [
   #     where: (day) ->
   #       "time >= #{day - 2}d AND time < #{day + 1}d AND " +
   #       "joinDay = '#{day - 2}'"
-  # }
-  # {
-  #   name: '2d SPS'
-  #   isRunningAverage: true
-  #   numerator:
-  #     select: 'count(userId)'
-  #     from: 'send'
-  #     where: (day) ->
-  #       "time >= #{day - 1}d AND time < #{day + 1}d AND " +
-  #       "joinDay = '#{day - 1}'"
-  #   denominator:
-  #     select: 'count(distinct(userId))'
-  #     from: 'send'
-  #     where: (day) ->
-  #       "time >= #{day - 1}d AND time < #{day}d AND " +
-  #       "joinDay = '#{day - 1}'"
   # }
   # {
   #   name: '3d k-factor'
