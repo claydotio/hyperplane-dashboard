@@ -21,31 +21,63 @@ metrics = [
         "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
   }
   {
-    name: '2 day SPS'
+    name: 'SPS per day'
     apps: ['clay-bot']
     isRunningAverage: true
     numerator:
       select: 'count(userId)'
       from: 'chatMessageCreate'
       where: (day) ->
-        "time >= #{dayToMS day - 2}ms AND time < #{dayToMS day}ms AND " +
+        "time >= #{dayToMS day }ms AND time < #{dayToMS day + 1}ms"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day}ms AND time < #{dayToMS day + 1}ms"
+  }
+  {
+    name: '1st day SPS'
+    apps: ['clay-bot']
+    isRunningAverage: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
+        "joinDay = '#{day - 1}'"
+    denominator:
+      select: 'count(distinct(userId))'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 1}ms AND time < #{dayToMS day}ms AND " +
+        "joinDay = '#{day - 1}'"
+  }
+  {
+    name: '2nd day SPS'
+    apps: ['clay-bot']
+    isRunningAverage: true
+    numerator:
+      select: 'count(userId)'
+      from: 'chatMessageCreate'
+      where: (day) ->
+        "time >= #{dayToMS day - 2}ms AND time < #{dayToMS day - 1}ms AND " +
         "joinDay = '#{day - 2}'"
     denominator:
       select: 'count(distinct(userId))'
       from: 'chatMessageCreate'
       where: (day) ->
-        "time >= #{dayToMS day - 2}ms AND time < #{dayToMS day}ms AND " +
+        "time >= #{dayToMS day - 2}ms AND time < #{dayToMS day - 1}ms AND " +
         "joinDay = '#{day - 2}'"
   }
   {
-    name: '5 day SPS'
+    name: '5th day SPS'
     apps: ['clay-bot']
     isRunningAverage: true
     numerator:
       select: 'count(userId)'
       from: 'chatMessageCreate'
       where: (day) ->
-        "time >= #{dayToMS day - 5}ms AND time < #{dayToMS day}ms AND " +
+        "time >= #{dayToMS day - 5}ms AND time < #{dayToMS day - 4}ms AND " +
         "joinDay = '#{day - 5}'"
     denominator:
       select: 'count(distinct(userId))'
