@@ -30,13 +30,23 @@ module.exports = class TradingCardsSubmissions
 
     @state = z.state
       submissions: @model[@key].getSubmissions()
+      winners: @model[@key].getSubmissionWinners()
 
   render: =>
-    {submissions} = @state.getValue()
-
-    console.log submissions
+    {submissions, winners} = @state.getValue()
 
     z '.z-trading-cards-submissions',
+      z 'h3', 'Top 2',
+        _.map winners, (winner) ->
+          z '.winner',
+            z 'div', winner.name
+            z 'div', winner.id
+            z 'div', _.sum winner.votes, 'count'
+            z 'div',
+              z 'img', {
+                src: winner.image.originalUrl#versions[0].url
+                width: 300
+              }
       z 'h3', 'Submissions'
       _.map submissions, (submission) =>
         z '.submission',

@@ -64,6 +64,11 @@ module.exports = class TradingCard
       headers:
         Authorization: "Basic #{b64encode @auth}"
 
+  getSubmissionWinners: =>
+    @netox.stream @path + '/adminSubmissionWinners',
+      headers:
+        Authorization: "Basic #{b64encode @auth}"
+
   approveSubmission: (submissionId) =>
     @netox.fetch @path + '/adminSubmissions/approve',
       method: 'POST'

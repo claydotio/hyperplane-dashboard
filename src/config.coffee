@@ -11,8 +11,8 @@ hostToHostname = (host) ->
 
 module.exports =
   ALLOWED_APPS: [
-    'kitten-cards', 'puppy-cards', 'indecency',
-    'trivia', 'hangman', 'tic-tac-toe', 'clay', 'clay-bot'
+    'kitten-cards', 'puppy-cards', 'indecency', 'nhtd', 'doodleDraw',
+    'trivia', 'hangman', 'tic-tac-toe', 'clay', 'clay-bot', 'frotz'
   ]
 
   AUTH_COOKIE: 'accessToken'
