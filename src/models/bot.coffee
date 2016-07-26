@@ -30,3 +30,8 @@ module.exports = class Bot
     @netox.stream PATH + "/adminMetrics/user/#{id}",
       headers:
         Authorization: "Basic #{b64encode AUTH}"
+
+  getUserInfoById: (id) =>
+    @netox.stream PATH + "/adminMetrics/user/#{id}/info",
+      headers:
+        Authorization: "Basic #{b64encode AUTH}"

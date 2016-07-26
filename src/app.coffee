@@ -10,6 +10,7 @@ HomePage = require './pages/home'
 TradingCardsUserPage = require './pages/trading_cards/user'
 TradingCardsSubmissionsPage = require './pages/trading_cards/submissions'
 BotMessagesPage = require './pages/bot/messages'
+BotUserPage = require './pages/bot/user'
 FourOhFourPage = require './pages/404'
 
 ANIMATION_TIME_MS = 500
@@ -82,6 +83,11 @@ module.exports = class App
         $page is $botMessagesPage
       model
     })
+    $botUserPage = new BotUserPage({
+      requests: requests.filter ({$page}) ->
+        $page is $botUserPage
+      model
+    })
     $fourOhFourPage = new FourOhFourPage({
       requests: requests.filter ({$page}) -> $page instanceof FourOhFourPage
       model
@@ -94,6 +100,7 @@ module.exports = class App
     router.addRoute '/puppyCards/submissions', -> $puppyCardsSubmissionsPage
     router.addRoute '/trumpCards/user/:id', -> $trumpCardsUserPage
     router.addRoute '/bot/messages/:chatId', -> $botMessagesPage
+    router.addRoute '/bot/user/:userId', -> $botUserPage
     router.addRoute '*', -> $fourOhFourPage
 
     handleRequest = requests.doOnNext ({req, res, route, $page}) =>

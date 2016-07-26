@@ -43,6 +43,16 @@ module.exports = class Bot
     z '.z-bot',
       z '.g-grid',
         z '.g-col.g-xs-12.g-md-3',
+          z '.title', 'Most active users'
+          _.map stats?.activeUsers, ({user, count}) ->
+            z 'div',
+              z 'a.username', {
+                href: "/bot/user/#{user.id}"
+                onclick: (e) ->
+                  e.preventDefault()
+                  z.router.go e.target.href
+              }, "#{user?.kikUsername} (#{count})"
+        z '.g-col.g-xs-12.g-md-3',
           z '.title', 'Unknown responses'
           _.map stats?.unknownResponses, (response) ->
             z '.response', {
@@ -70,4 +80,4 @@ module.exports = class Bot
                   e.preventDefault()
                   z.router.go e.target.href
               },
-                message.message.text or 'app-link'
+                message.message?.text or 'app-link'
